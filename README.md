@@ -43,6 +43,18 @@ The executable EDA consumes the canonical panel, so preprocessing precedes the E
 
 For IDE notebook execution, select `.venv/bin/python` as the kernel. The notebooks find the repository root themselves. Running `scripts/execute_notebooks.py` sets the kernel executable explicitly and saves executed outputs. The two notebooks call the same reusable implementations as the CLI, rather than duplicating pipeline logic.
 
+## Model integration and teammate readiness
+
+See [the model integration contract](docs/MODEL_INTEGRATION.md) for `BaseForecaster`, model factories, origin-safe inputs, prediction validation and isolated outputs. [Teammate setup](docs/TEAMMATE_SETUP.md) gives clone/data/artifact/reproduction steps. [Dependency compatibility](docs/DEPENDENCIES.md) records verified LightGBM/PyTorch/GluonTS setups; GluonTS needs a separate pandas-2 environment, and LightGBM on this Mac requires OpenMP. Baseline dependencies and experiment settings remain unchanged.
+
+Run one read-only readiness command from the repository root:
+
+```bash
+python -m scripts.smoke_test
+```
+
+It checks imports and local data/artifacts, then runs the existing dummy over all development folds (26,880 predictions). It does not rebuild data, write results or evaluate the final holdout. A minimal constant integration example is available with `python -m examples.constant_forecaster --output-dir integration_example/run_001`; it is not an experimental baseline.
+
 ## Fixed experiment boundaries
 
 - One item/store pair is one series. Seed **42**, **240 series**: 80 from each trailing-365-day volume tercile, selected using history through **d_1801 only**, with store/category diversity and no minimum positive-sales rule.

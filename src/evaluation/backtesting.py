@@ -9,6 +9,7 @@ import platform
 from time import perf_counter
 from pathlib import Path
 from typing import Callable
+from weakref import ref
 import numpy as np
 import pandas as pd
 from src.config import load_config, data_path, config_hash
@@ -111,7 +112,8 @@ def validate_predictions(prediction, expected, model_name=None):
                                          how="outer", validate="one_to_one", indicator=True)
     if not matched["_merge"].eq("both").all():
         raise ValueError("Prediction keys, dates, or horizons differ from requested grid")
-    if not np.isfinite(prediction["y_pred"]).all() or prediction["y_pred"].lt(0).any():
+    if (prediction["y_pred"].isna().any() or not np.isfinite(prediction["y_pred"]).all()
+            or prediction["y_pred"].lt(0).any()):
         raise ValueError("Point forecasts must be finite and nonnegative")
     quantiles = prediction[["q10", "q50", "q90"]]
     if not quantiles.isna().all().all():
@@ -136,14 +138,14 @@ def run_backtest(panel, cfg, factory: Callable[[], BaseForecaster], output_dir=N
     # Drop the final holdout before any construction, not just before scoring.
     development = panel.loc[panel.day_num.le(cfg["forecast"]["final_origin"])].copy()
     forecasts, scored_folds, metric_rows, execution = [], [], [], []
-    models = []  # Keep references, enabling a strict fresh-instance check.
+    models = []  # Weak references detect reuse without retaining fitted model weights.
     model_name = None
     for fold in development_splits(cfg):
         inputs = construct_inputs(development, fold)
         model = factory()
-        if not isinstance(model, BaseForecaster) or any(model is old for old in models):
+        if not isinstance(model, BaseForecaster) or any(model is old() for old in models):
             raise ValueError("Factory must return a fresh BaseForecaster per fold")
-        models.append(model)
+        models.append(ref(model))
         start = perf_counter()
         model.fit(inputs)
         fit_seconds = perf_counter() - start
@@ -161,6 +163,7 @@ def run_backtest(panel, cfg, factory: Callable[[], BaseForecaster], output_dir=N
         scored_folds.append(scored)
         execution.append({"origin": fold.origin, "train_rows": len(inputs.history), "forecast_rows": len(prediction),
                           "fit_seconds": fit_seconds, "predict_seconds": predict_seconds})
+        del model  # Release fold-local state before constructing the next model.
     predictions = pd.concat(forecasts, ignore_index=True)
     scored = pd.concat(scored_folds, ignore_index=True)
     metric_rows.append({"model": model_name, "origin": pd.NA, "scope": "all_folds_pooled", **score_predictions(scored)})
