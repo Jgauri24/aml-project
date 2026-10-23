@@ -15,10 +15,9 @@ Single-SKU vs. Multi-SKU
 -------------------------
 "Single-SKU" refers to the estimation strategy: every series in the 240-series
 cohort receives its own independently estimated (Q_i, R_i) pair.  No information
-is shared across series during fitting.  Milestone 7 (Multi-SKU Kalman) can
-import the pure functions ``kalman_filter``, ``fit_local_level``, and
-``forecast_local_level`` from this module and supply pooled or hierarchically
-estimated noise variances instead.
+is shared across series during fitting. Milestone 7 extends this work with a
+family of independent per-series Kalman variants; it is neither pooled nor
+hierarchical.
 
 Gaussian approximation and zero-clipping
 -----------------------------------------
@@ -411,10 +410,9 @@ class KalmanSingleSKU(BaseForecaster):
 
     Milestone-7 handoff
     -------------------
-    Import ``kalman_filter``, ``fit_local_level``, and ``forecast_local_level``
-    from this module.  Provide alternative (Q, R) values from pooled or
-    hierarchical estimation, then call the same ``kalman_filter`` and
-    ``forecast_local_level`` to produce forecasts.
+    M7 supplies independent per-series variants in ``kalman_forecaster.py``.
+    They estimate their own parameters from each series' own history and do not
+    pool or hierarchically share estimates.
     """
 
     def __init__(self, seed: int = 42) -> None:

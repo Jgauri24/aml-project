@@ -1,4 +1,60 @@
-# Milestones 0–4 implementation handoff
+# Implementation handoff
+
+## M7 status and reproduction
+
+M7 is complete: four independent per-series Kalman variants were evaluated on
+the fixed development folds only. No final-holdout result or analysis is in
+this handoff.
+
+```bash
+# verified M6 baseline
+python -m scripts.run_kalman_single_sku
+# M7 real development runs
+python -m scripts.run_kalman_forecaster --variants local_level local_level_seasonal --n-jobs -1
+python -m scripts.run_kalman_forecaster --variants local_trend local_trend_seasonal --n-jobs -1
+# M7 comparison reports and figures
+python -m scripts.analyze_kalman_variants
+# complete test suite
+python -m pytest
+```
+
+The executed full-suite result was 142 passed with 12 expected all-zero-window
+fallback warnings. The M7 synthetic seasonal gate is included in that suite.
+
+### M7 files and paths
+
+- Model and tests: `src/models/kalman_forecaster.py`,
+  `tests/test_kalman_forecaster.py`, and `tests/test_kalman_seasonal_gate.py`.
+- Runners: `scripts/run_kalman_forecaster.py` and
+  `scripts/analyze_kalman_variants.py`.
+- Per-variant evaluator artifacts and 960-row fit summaries:
+  `data/processed/kalman_forecaster/<variant>/`.
+- Comparison and breakdowns: `reports/kalman_variant_comparison.csv`,
+  `reports/kalman_variant_by_horizon.csv`,
+  `reports/kalman_variant_by_volume_band.csv`, and
+  `reports/kalman_variant_by_origin.csv`.
+- Findings and figures: `reports/m7_kalman_findings.md` and
+  `reports/figures/kalman_variant_*.png`.
+
+Each M7 variant has 26,880 forecast rows (240 series × 4 origins × 28 days),
+and its fit summary has 960 rows. Saved per-fold fit/predict totals are:
+
+| Variant | Fit seconds | Predict seconds | Converged | Fallbacks |
+| --- | ---: | ---: | ---: | ---: |
+| local_level | 58.110396 | 1.223637 | 959 | 1 |
+| local_level_seasonal | 209.475019 | 1.215572 | 959 | 1 |
+| local_trend | 170.225579 | 1.224391 | 959 | 1 |
+| local_trend_seasonal | 281.147637 | 1.281408 | 959 | 1 |
+
+The generated metadata records per-fold fit/predict seconds shown above, but
+does not persist a total command wall-clock duration. Every M7 variant had the
+same all-zero-window fallback: `FOODS_1_102__CA_4` at d_1885. No
+optimizer-failure fallback was recorded. Known issues are the Gaussian count
+approximation, zero clipping, independent estimation, and material MLE runtime.
+Next: add the compatible weekly seasonal-naive baseline; keep the final
+holdout reserved.
+
+## Historical M0–M4 handoff
 
 ## Status
 

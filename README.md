@@ -1,6 +1,6 @@
 # Inventory Demand Forecasting via Kalman Filtering and Global DeepAR Models
 
-Milestones **0–4** implement data understanding, cutoff-safe EDA, a reproducible daily panel and a shared development backtester. The intended comparison is seasonal naive, per-series Kalman, global LightGBM and probabilistic DeepAR. **None is implemented or trained yet.** The constant-zero dummy tests infrastructure only.
+Milestones **0–4** implement data understanding, cutoff-safe EDA, a reproducible daily panel and a shared development backtester. Milestones **6–7** add independent per-series Kalman development models. The intended wider comparison remains seasonal naive, per-series Kalman, global LightGBM and probabilistic DeepAR; only the Kalman work described below has been run here.
 
 ## Setup
 
@@ -33,6 +33,14 @@ python -m src.data.preprocess
 python -m src.data.eda
 # M4: infrastructure-only constant-zero development backtest; never final holdout
 python -m src.evaluation.backtesting
+# M6 verified local-level baseline
+python -m scripts.run_kalman_single_sku
+# M7 independent variants; run two batches or all four together
+python -m scripts.run_kalman_forecaster --variants local_level local_level_seasonal --n-jobs -1
+python -m scripts.run_kalman_forecaster --variants local_trend local_trend_seasonal --n-jobs -1
+python -m scripts.run_kalman_forecaster --variants local_level local_level_seasonal local_trend local_trend_seasonal --n-jobs -1
+# M7 tests, including synthetic weekly-seasonality gate
+python -m pytest tests/test_kalman_forecaster.py tests/test_kalman_seasonal_gate.py
 # Execute and save outputs in both notebooks using this environment's kernel
 python scripts/execute_notebooks.py
 # Unit, synthetic integration and leakage tests
@@ -96,3 +104,24 @@ Read [dataset dictionary](reports/dataset_dictionary.md), [EDA findings](reports
 Zero sales do not establish stockouts; missing prices do not establish unavailability. Price and calendar associations are descriptive, not causal. Models will predict observed sales unless a later protocol explicitly addresses latent demand.
 
 The next implementation task is **Milestone 5: a weekly seasonal naive forecaster behind BaseForecaster**, evaluated only on the four development origins.
+
+## M7 Kalman status
+
+M7 provides four `BaseForecaster` variants, all independently estimated for
+each item/store series: `local_level`, `local_level_seasonal`, `local_trend`,
+and `local_trend_seasonal`. The completed development run uses the four fixed
+origins and does not score `d_1914–d_1941`.
+
+With the pre-stated rule “lowest pooled development WAPE; then q50 pinball and
+combined q10/q90 pinball only for an exact WAPE tie”, the verified winner is
+`kalman_local_level_seasonal` (WAPE `0.828557`). It improves on the
+nonseasonal local-level variant (`0.836776`); the two trend variants do not
+win the same criterion. These are development-only findings, not final
+holdout results.
+
+Per-variant `predictions.parquet`, `scored_predictions.parquet`, `metrics.csv`,
+`execution_metadata.json`, and `fit_summary.csv` are in
+`data/processed/kalman_forecaster/<variant>/`. The M7 comparison CSVs and
+figures are under `reports/` and `reports/figures/`. The next recommended task
+is to implement and evaluate the compatible weekly seasonal-naive baseline;
+do not use the reserved final holdout for model selection.

@@ -32,6 +32,28 @@ predictions, metrics, execution = run_backtest(
 )
 ```
 
+## M7 independent Kalman variants
+
+`src.models.kalman_forecaster.KalmanForecaster` implements four independent
+per-series state-space variants: `local_level`, `local_level_seasonal`,
+`local_trend`, and `local_trend_seasonal`. It subclasses `BaseForecaster` and
+returns the unchanged `PREDICTION_COLUMNS` schema with finite q10/q50/q90;
+`y_pred == q50`. Every series is fitted independently within each fold—there
+is no pooling, hierarchy, or state transfer across series or folds.
+
+Use `make_kalman_factory(variant, n_jobs=N)` with the shared runner. The
+development runner saves normal evaluator artifacts plus a per-series,
+per-origin `fit_summary.csv`:
+
+```bash
+python -m scripts.run_kalman_forecaster --variants local_level local_level_seasonal --n-jobs -1
+python -m scripts.run_kalman_forecaster --variants local_trend local_trend_seasonal --n-jobs -1
+```
+
+Outputs are under `data/processed/kalman_forecaster/<variant>/`. The command
+loads only through `final_origin`, uses the existing `run_backtest`, and does
+not evaluate the final holdout.
+
 `factory` takes **no arguments** and must return a **fresh BaseForecaster instance** each time. Do not pass a fitted object, an estimator class that does not implement this contract, or a lambda returning a shared singleton. Constructor parameters belong in a closure or `functools.partial`. The engine invokes the factory once per development origin, then calls `fit(inputs)` followed by `predict(inputs)`. The return from `fit` is ignored; returning `self` is conventional.
 
 A global-model adapter owns one global model per fold. A per-series adapter can own its collection of 240 independently fitted filters inside that one fold-local adapter. Both produce the same forecast table. Old fold models are released rather than retained by the engine; weak references still detect reuse of a live model. Model code must release any external GPU/cache/global references it creates itself.

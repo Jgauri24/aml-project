@@ -13,3 +13,6 @@ __pycache__/
 !/data/processed/.gitkeep
 # Generated analysis tables; readable findings/figures remain versionable.
 /reports/eda_*.csv
+m5-forecasting-accuracy/sales_train_validation.csv
+m5-forecasting-accuracy/sales_train_evaluation.csv
+m5-forecasting-accuracy/sell_prices.csv
