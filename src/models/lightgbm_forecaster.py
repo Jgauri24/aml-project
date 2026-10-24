@@ -219,17 +219,52 @@ def compare_with_baselines(
     """Attempt to load seasonal-naive and Kalman metrics; return comparison table."""
     rows = [lgb_metrics]
 
+    # 1. Try local data/processed metrics
+    processed_dir = output_dir.parent if output_dir.name == "lightgbm" else output_dir
+    found_subdirs = set()
     for subdir in [
         "seasonal_naive/weekly_seasonal",
-        "kalman_forecaster/local_trend_seasonal",
+        "seasonal_naive/last_value",
         "kalman_forecaster/local_level_seasonal",
+        "kalman_forecaster/local_trend_seasonal",
     ]:
-        candidate = output_dir.parent.parent / subdir / "metrics.csv"
+        candidate = processed_dir / subdir / "metrics.csv"
         if candidate.exists():
             df = pd.read_csv(candidate)
             rows.append(df)
-        else:
-            print(f"  Baseline metrics not found (skipping): {candidate.name}")
+            found_subdirs.add(subdir)
+
+    # 2. Fall back to reports/ if baseline directories were not found
+    reports_dir = output_dir.parent.parent.parent / "reports"
+    if not reports_dir.exists():
+        reports_dir = Path("reports")
+
+    if not any("seasonal_naive" in s for s in found_subdirs) and reports_dir.exists():
+        m5_file = reports_dir / "m5_baseline_comparison.csv"
+        if m5_file.exists():
+            m5_df = pd.read_csv(m5_file)
+            rows.append(m5_df)
+
+    if not any("kalman" in s for s in found_subdirs) and reports_dir.exists():
+        kalman_file = reports_dir / "kalman_variant_comparison.csv"
+        if kalman_file.exists():
+            kalman_df = pd.read_csv(kalman_file)
+            k_rows = []
+            for _, r in kalman_df.iterrows():
+                k_rows.append({
+                    "model": r["model"],
+                    "origin": np.nan,
+                    "scope": "all_folds_pooled",
+                    "n_rows": int(r.get("prediction_rows", 26880)),
+                    "n_observed": int(r.get("observed_rows", 26880)),
+                    "mae": float(r["MAE"]),
+                    "rmse": float(r["RMSE"]),
+                    "wape": float(r["WAPE"]),
+                    "pinball_q10": float(r.get("pinball_q10", np.nan)),
+                    "pinball_q50": float(r.get("pinball_q50", np.nan)),
+                    "pinball_q90": float(r.get("pinball_q90", np.nan)),
+                })
+            rows.append(pd.DataFrame(k_rows))
 
     return pd.concat(rows, ignore_index=True) if len(rows) > 1 else lgb_metrics.copy()
 
@@ -252,8 +287,13 @@ def run_lightgbm_forecaster(
     if tune:
         best_params = tune_hyperparameters(panel, cfg)
 
+    # Collect fitted instances to avoid redundant refitting
+    fitted_models: List[LightGBMForecaster] = []
+
     def factory() -> LightGBMForecaster:
-        return LightGBMForecaster(params=best_params)
+        m = LightGBMForecaster(params=best_params)
+        fitted_models.append(m)
+        return m
 
     started = perf_counter()
     predictions, metrics, metadata = run_backtest(
@@ -261,8 +301,17 @@ def run_lightgbm_forecaster(
     )
     elapsed = perf_counter() - started
 
-    # Collect feature importance (requires a second pass to get fitted models)
-    importance_records = _collect_importance(panel, cfg, best_params)
+    # Collect feature importance directly from the models fitted in backtest
+    importance_records = []
+    for model in fitted_models:
+        if model.feature_importance_ is not None and model._fitted_origin is not None:
+            df = model.feature_importance_.copy()
+            df["origin"] = model._fitted_origin
+            importance_records.append(df)
+
+    if not importance_records:
+        importance_records = _collect_importance(panel, cfg, best_params)
+
     if importance_records:
         importance_df = (
             pd.concat(importance_records, ignore_index=True)
@@ -279,6 +328,10 @@ def run_lightgbm_forecaster(
     print("\n-- Metrics comparison --")
     comparison = compare_with_baselines(metrics, destination)
     comparison.to_csv(destination / "comparison_metrics.csv", index=False)
+    # Also save to reports/ for repository-wide transparency
+    repo_reports = destination.parent.parent.parent / "reports"
+    if repo_reports.exists():
+        comparison.to_csv(repo_reports / "m9_lightgbm_comparison.csv", index=False)
     print(comparison.to_string(index=False))
 
     metadata["wall_seconds"] = elapsed

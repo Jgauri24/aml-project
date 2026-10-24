@@ -47,6 +47,10 @@ python -m pytest tests/test_kalman_forecaster.py tests/test_kalman_seasonal_gate
 python -m scripts.build_features
 # M8 tests
 python -m pytest tests/test_feature_engineering.py
+# M9: train and evaluate LightGBM forecaster with rolling-validation tuning
+python -m scripts.run_lightgbm_forecaster
+# M9 tests
+python -m pytest tests/test_lightgbm_forecaster.py
 # Execute and save outputs in both notebooks using this environment's kernel
 python scripts/execute_notebooks.py
 # Unit, synthetic integration and leakage tests
@@ -94,7 +98,9 @@ src/evaluation/splits.py          Expanding chronological windows; final reserva
 src/evaluation/metrics.py         Explicit missingness and pooled metric definitions
 src/evaluation/backtesting.py    Input boundary, BaseForecaster, factory and dummy runner
 src/features/feature_engineering.py Leakage-safe feature builder and dataset exporter
+src/models/lightgbm_forecaster.py Direct multi-horizon LightGBM forecaster
 scripts/build_features.py         CLI runner for feature dataset creation
+scripts/run_lightgbm_forecaster.py CLI runner for LightGBM training and tuning
 notebooks/                       Executed dataset-understanding and EDA notebooks
 scripts/execute_notebooks.py      Execute both notebooks with the active interpreter
 tests/                           Synthetic unit/integration/leakage tests
@@ -105,10 +111,11 @@ data/interim/selection_metadata.json
 data/processed/demand_panel.parquet     465,840 × 28 canonical daily panel
 data/processed/panel_metadata.json      Hashes, dtypes and validation results
 data/processed/features/                M8 leakage-safe feature tables & metadata
+data/processed/lightgbm/                M9 LightGBM predictions, metrics, feature importance
 data/processed/dummy_backtest/          Forecasts, scored forecasts, metrics, execution metadata
 ```
 
-Read [dataset dictionary](reports/dataset_dictionary.md), [EDA findings](reports/eda_findings.md), [experiment protocol](reports/experiment_protocol.md), [M8 feature report](reports/m8_feature_engineering.md), and [implementation handoff](reports/implementation_handoff.md) for evidence, assumptions and learning questions. Reports and notebooks contain actual executed results; raw and processed data remain local.
+Read [dataset dictionary](reports/dataset_dictionary.md), [EDA findings](reports/eda_findings.md), [experiment protocol](reports/experiment_protocol.md), [M8 feature report](reports/m8_feature_engineering.md), [M9 LightGBM findings](reports/m9_lightgbm_findings.md), and [implementation handoff](reports/implementation_handoff.md) for evidence, assumptions and learning questions. Reports and notebooks contain actual executed results; raw and processed data remain local.
 
 Zero sales do not establish stockouts; missing prices do not establish unavailability. Price and calendar associations are descriptive, not causal. Models will predict observed sales unless a later protocol explicitly addresses latent demand.
 
@@ -209,4 +216,21 @@ and generates 26 predictor columns:
 - **Categorical encodings**: integer mappings for `item_id`, `store_id`, `dept_id`, `cat_id`, `state_id`
 
 Feature matrices for all four development folds are exported to `data/processed/features/` with full provenance metadata in `feature_metadata.json`. Detailed findings and analysis are documented in [M8 feature report](reports/m8_feature_engineering.md).
+
+## M9 LightGBM status
+
+Milestone 9 implements a direct multi-horizon gradient boosting forecaster using LightGBM (`src.models.lightgbm_forecaster.LightGBMForecaster`).
+Trained with L1 regression objective and rolling-validation hyperparameter selection across folds 1–3, the selected model (`num_leaves=127, learning_rate=0.03, n_estimators=700`) outperforms all statistical and heuristic baselines:
+
+| Model | Model Family | Pooled MAE | Pooled RMSE | Pooled WAPE |
+| :--- | :--- | :---: | :---: | :---: |
+| **LightGBM (Tuned)** | **Global GBDT** | **0.9874** | **2.3995** | **0.8176** |
+| `kalman_local_level_seasonal` | State-Space Filter | 1.0007 | 2.0535 | 0.8286 |
+| `kalman_local_trend_seasonal` | State-Space Filter | 1.0030 | 2.0576 | 0.8305 |
+| `kalman_local_level` | State-Space Filter | 1.0106 | 2.0613 | 0.8368 |
+| `naive_weekly_seasonal` | Heuristic Baseline | 1.1869 | 2.5487 | 0.9828 |
+| `naive_last_value` | Heuristic Baseline | 1.2479 | 2.5151 | 1.0332 |
+
+Outputs and artifacts are saved in `data/processed/lightgbm/` (`predictions.parquet`, `scored_predictions.parquet`, `metrics.csv`, `feature_importance.csv`, `comparison_metrics.csv`). Comprehensive findings are documented in [M9 LightGBM findings](reports/m9_lightgbm_findings.md).
+
 
