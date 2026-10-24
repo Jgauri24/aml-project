@@ -1,0 +1,76 @@
+{
+  "cutoff_day": 1801,
+  "date_end": "2016-01-03",
+  "series": 240,
+  "rows": 432240,
+  "group_summary": [
+    {
+      "volume_group": "low",
+      "series": 80,
+      "median_mean": 0.14491948917268185,
+      "median_cv": 3.274510969804153,
+      "median_zero_fraction": 0.8906163242642976,
+      "median_max_zero_run": 403.5,
+      "median_acf_7": 0.08014669172961739,
+      "median_price_corr": -0.038482319867520626
+    },
+    {
+      "volume_group": "medium",
+      "series": 80,
+      "median_mean": 0.42087729039422545,
+      "median_cv": 2.2036123685198747,
+      "median_zero_fraction": 0.743753470294281,
+      "median_max_zero_run": 430.0,
+      "median_acf_7": 0.1819118914201595,
+      "median_price_corr": -0.02625402249686755
+    },
+    {
+      "volume_group": "high",
+      "series": 80,
+      "median_mean": 1.5738478622987229,
+      "median_cv": 1.460266528655238,
+      "median_zero_fraction": 0.4303164908384231,
+      "median_max_zero_run": 236.5,
+      "median_acf_7": 0.3163653366759738,
+      "median_price_corr": -0.05603225724893948
+    }
+  ],
+  "acf_medians": {
+    "1": 0.1727614923806651,
+    "7": 0.16390045053831753,
+    "14": 0.14589667007910778,
+    "28": 0.13482013453338512
+  },
+  "patterns": {
+    "intermittent": 175,
+    "lumpy": 54,
+    "smooth": 8,
+    "erratic": 3
+  },
+  "zero_fraction_pooled": 0.6933300943920044,
+  "longest_zero_run": 1640,
+  "weekday_peak_to_trough": 1.3693430499066412,
+  "price_missing_fraction": 0.2443619285582084,
+  "valid_price_correlations": 159,
+  "median_price_correlation": -0.047132738325720396,
+  "snap_day_ratio_by_state": {
+    "CA": 1.048,
+    "TX": 1.06,
+    "WI": 1.08
+  },
+  "representative_series": {
+    "low": "FOODS_1_056__WI_2",
+    "medium": "FOODS_2_351__WI_1",
+    "high": "FOODS_3_194__WI_2"
+  },
+  "figures": [
+    "01_sales_distribution.png",
+    "02_representative_histories.png",
+    "03_rolling_averages.png",
+    "04_seasonality.png",
+    "05_autocorrelation.png",
+    "06_sparsity.png",
+    "07_events_snap.png",
+    "08_prices.png"
+  ]
+}
