@@ -43,6 +43,10 @@ python -m scripts.run_kalman_forecaster --variants local_trend local_trend_seaso
 python -m scripts.run_kalman_forecaster --variants local_level local_level_seasonal local_trend local_trend_seasonal --n-jobs -1
 # M7 tests, including synthetic weekly-seasonality gate
 python -m pytest tests/test_kalman_forecaster.py tests/test_kalman_seasonal_gate.py
+# M8: build leakage-safe feature matrices for all backtest folds
+python -m scripts.build_features
+# M8 tests
+python -m pytest tests/test_feature_engineering.py
 # Execute and save outputs in both notebooks using this environment's kernel
 python scripts/execute_notebooks.py
 # Unit, synthetic integration and leakage tests
@@ -89,6 +93,8 @@ src/data/eda.py                   Reproducible cutoff-safe statistics and plots
 src/evaluation/splits.py          Expanding chronological windows; final reservation
 src/evaluation/metrics.py         Explicit missingness and pooled metric definitions
 src/evaluation/backtesting.py    Input boundary, BaseForecaster, factory and dummy runner
+src/features/feature_engineering.py Leakage-safe feature builder and dataset exporter
+scripts/build_features.py         CLI runner for feature dataset creation
 notebooks/                       Executed dataset-understanding and EDA notebooks
 scripts/execute_notebooks.py      Execute both notebooks with the active interpreter
 tests/                           Synthetic unit/integration/leakage tests
@@ -98,10 +104,11 @@ data/interim/selected_skus.csv    240 IDs, static fields and cutoff-safe selecti
 data/interim/selection_metadata.json
 data/processed/demand_panel.parquet     465,840 × 28 canonical daily panel
 data/processed/panel_metadata.json      Hashes, dtypes and validation results
+data/processed/features/                M8 leakage-safe feature tables & metadata
 data/processed/dummy_backtest/          Forecasts, scored forecasts, metrics, execution metadata
 ```
 
-Read [dataset dictionary](reports/dataset_dictionary.md), [EDA findings](reports/eda_findings.md), [experiment protocol](reports/experiment_protocol.md), and [implementation handoff](reports/implementation_handoff.md) for evidence, assumptions and learning questions. Reports and notebooks contain actual executed results; raw and processed data remain local.
+Read [dataset dictionary](reports/dataset_dictionary.md), [EDA findings](reports/eda_findings.md), [experiment protocol](reports/experiment_protocol.md), [M8 feature report](reports/m8_feature_engineering.md), and [implementation handoff](reports/implementation_handoff.md) for evidence, assumptions and learning questions. Reports and notebooks contain actual executed results; raw and processed data remain local.
 
 Zero sales do not establish stockouts; missing prices do not establish unavailability. Price and calendar associations are descriptive, not causal. Models will predict observed sales unless a later protocol explicitly addresses latent demand.
 
@@ -188,3 +195,18 @@ Per-variant `predictions.parquet`, `scored_predictions.parquet`, `metrics.csv`,
 figures are under `reports/` and `reports/figures/`. Milestone 5 now supplies
 compatible naive baselines for comparison. Keep the reserved final holdout
 unused while implementing the remaining global-model comparisons.
+
+## M8 Feature Engineering status
+
+Milestone 8 implements leakage-safe feature engineering for tabular gradient boosting models.
+The module `src.features.feature_engineering.FeatureEngineer` processes `ForecastInputs`
+and generates 26 predictor columns:
+- **Lags**: 1, 7, 14, 28 days (for multi-step forecasting, unknown future observations are set to NaN)
+- **Rolling statistics**: 7, 14, 28-day means and standard deviations
+- **Calendar & events**: day of week, day of month, week of year, month, year, weekend flag, named event indicators
+- **SNAP indicator**: state-specific SNAP benefits (conservatively 0 in future predictions)
+- **Price features**: last known shelf price and 7-day price change ratio
+- **Categorical encodings**: integer mappings for `item_id`, `store_id`, `dept_id`, `cat_id`, `state_id`
+
+Feature matrices for all four development folds are exported to `data/processed/features/` with full provenance metadata in `feature_metadata.json`. Detailed findings and analysis are documented in [M8 feature report](reports/m8_feature_engineering.md).
+

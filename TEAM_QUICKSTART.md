@@ -2,14 +2,14 @@
 
 Forecast daily Walmart product-store sales over 28 days and compare seasonal naive, local Kalman filtering, LightGBM, and DeepAR.
 
-**Status:** Milestones 0–4 (environment, dataset exploration, EDA, preprocessing, and development backtesting) are implemented on the `eda` branch. Model implementations start at Milestone 5.
+**Status:** Milestones 0–8 (environment, dataset exploration, EDA, preprocessing, development backtesting, seasonal naive baselines, single/multi Kalman filters, and leakage-safe feature engineering) are implemented. Tabular model development (LightGBM) starts at Milestone 9.
 
 ## 1. Clone and install
 
 Use Python **3.14.6** to reproduce the current data pipeline's tested environment (check compatibility separately before installing ML/deep-learning model libraries).
 
 ```bash
-git clone --branch eda https://github.com/Jgauri24/aml-project.git
+git clone --branch feat-engineering https://github.com/Jgauri24/aml-project.git
 cd aml-project
 python3.14 -m venv .venv
 source .venv/bin/activate   # Windows PowerShell: .venv\Scripts\Activate.ps1
@@ -39,6 +39,7 @@ python -m src.data.understanding      # Audit input data and select 240 series
 python -m src.data.preprocess         # Generate cleaned daily panel
 python -m src.data.eda                # Rebuild EDA outputs (optional)
 python -m src.evaluation.backtesting  # Dummy-model development backtest
+python -m scripts.build_features      # Build M8 leakage-safe feature matrices
 python -m pytest                      # Check tests
 ```
 
@@ -47,7 +48,9 @@ Main outputs:
 - `data/interim/selected_skus.csv` — selected item-store series
 - `data/processed/demand_panel.parquet` — model-ready daily panel
 - `data/processed/panel_metadata.json` — data validation and provenance
+- `data/processed/features/` — M8 leakage-safe feature tables and metadata
 - `reports/eda_findings.md` — descriptive analysis
+- `reports/m8_feature_engineering.md` — feature engineering findings and design
 - `reports/experiment_protocol.md` — experiment rules
 
 For notebook outputs: `python scripts/execute_notebooks.py`.

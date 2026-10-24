@@ -10,17 +10,17 @@ Shape: **1,969 × 14**.
 
 | column(s) | dtype |
 | --- | --- |
-| date | str |
+| date | object |
 | wm_yr_wk | int64 |
-| weekday | str |
+| weekday | object |
 | wday | int64 |
 | month | int64 |
 | year | int64 |
-| d | str |
-| event_name_1 | str |
-| event_type_1 | str |
-| event_name_2 | str |
-| event_type_2 | str |
+| d | object |
+| event_name_1 | object |
+| event_type_1 | object |
+| event_name_2 | object |
+| event_type_2 | object |
 | snap_CA | int64 |
 | snap_TX | int64 |
 | snap_WI | int64 |
@@ -102,7 +102,7 @@ Shape: **60,980 × 29**.
 
 | column(s) | dtype |
 | --- | --- |
-| id | str |
+| id | object |
 | F1 … F28 (all consecutive) | int64 |
 
 Coverage: `{}`

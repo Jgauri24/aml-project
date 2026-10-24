@@ -9,7 +9,7 @@
       "schema": [
         {
           "column(s)": "date",
-          "dtype": "str"
+          "dtype": "object"
         },
         {
           "column(s)": "wm_yr_wk",
@@ -17,7 +17,7 @@
         },
         {
           "column(s)": "weekday",
-          "dtype": "str"
+          "dtype": "object"
         },
         {
           "column(s)": "wday",
@@ -33,23 +33,23 @@
         },
         {
           "column(s)": "d",
-          "dtype": "str"
+          "dtype": "object"
         },
         {
           "column(s)": "event_name_1",
-          "dtype": "str"
+          "dtype": "object"
         },
         {
           "column(s)": "event_type_1",
-          "dtype": "str"
+          "dtype": "object"
         },
         {
           "column(s)": "event_name_2",
-          "dtype": "str"
+          "dtype": "object"
         },
         {
           "column(s)": "event_type_2",
-          "dtype": "str"
+          "dtype": "object"
         },
         {
           "column(s)": "snap_CA",
@@ -482,7 +482,7 @@
       "schema": [
         {
           "column(s)": "id",
-          "dtype": "str"
+          "dtype": "object"
         },
         {
           "column(s)": "F1 \u2026 F28 (all consecutive)",
