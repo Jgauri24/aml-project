@@ -1,6 +1,6 @@
 # Inventory Demand Forecasting via Kalman Filtering and Global DeepAR Models
 
-Milestones **0–4** implement data understanding, cutoff-safe EDA, a reproducible daily panel and a shared development backtester. Milestones **6–7** add independent per-series Kalman development models. The intended wider comparison remains seasonal naive, per-series Kalman, global LightGBM and probabilistic DeepAR; only the Kalman work described below has been run here.
+Milestones **0–4** implement data understanding, cutoff-safe EDA, a reproducible daily panel and a shared development backtester. Milestone **5** adds last-value and weekly seasonal naive point baselines. Milestones **6–7** add independent per-series Kalman development models. The wider comparison includes these baselines, per-series Kalman, global LightGBM and probabilistic DeepAR; naive and Kalman development evaluations are documented below.
 
 ## Setup
 
@@ -33,6 +33,8 @@ python -m src.data.preprocess
 python -m src.data.eda
 # M4: infrastructure-only constant-zero development backtest; never final holdout
 python -m src.evaluation.backtesting
+# M5: last-value and weekly seasonal naive baselines, reports and figures
+python -m scripts.run_seasonal_naive
 # M6 verified local-level baseline
 python -m scripts.run_kalman_single_sku
 # M7 independent variants; run two batches or all four together
@@ -103,7 +105,68 @@ Read [dataset dictionary](reports/dataset_dictionary.md), [EDA findings](reports
 
 Zero sales do not establish stockouts; missing prices do not establish unavailability. Price and calendar associations are descriptive, not causal. Models will predict observed sales unless a later protocol explicitly addresses latent demand.
 
-The next implementation task is **Milestone 5: a weekly seasonal naive forecaster behind BaseForecaster**, evaluated only on the four development origins.
+## M5 naive baselines
+
+`src/models/seasonal_naive.py` implements `SeasonalNaiveForecaster(BaseForecaster)`
+with two independent point-forecast variants:
+
+- `last_value` (`naive_last_value`): for every horizon h, predict y(s), where s
+  is the latest finite observed sales day at or before the origin t.
+- `weekly_seasonal` (`naive_weekly_seasonal`): predict
+  y(t - 6 + ((h - 1) mod 7)), repeating the final seven **calendar days** unchanged
+  across all 28 forecast days. Missing positions search backward on the same
+  weekday, then use the latest overall finite observation.
+
+Both models predict zero if no finite observations exist. Genuine zero sales
+remain valid; nonfinite observations are unavailable and finite negative sales
+are rejected. Calendar gaps preserve weekday alignment. Per-series/origin source
+days and fallback counts/policies are recorded in `fit_summary.csv`. These models
+estimate no uncertainty: q10/q50/q90 and pinball losses remain NaN.
+
+Run from the repository root with the existing baseline environment:
+
+```bash
+source .venv/bin/activate
+python -m scripts.run_seasonal_naive
+python -m pytest tests/test_seasonal_naive.py -v
+python -m pytest
+python -m scripts.smoke_test
+
+# Optional: choose a variant, alternate YAML or separate artifact directory.
+python -m scripts.run_seasonal_naive --config experiment.yaml \
+  --models weekly_seasonal --output-dir seasonal_naive_custom
+```
+
+The CLI loads the existing canonical panel through d_1913 using `load_panel`,
+creates a fresh model for each fold and uses the shared backtester, metrics and
+prediction validator. It preserves the seed, cohort and all experiment settings.
+It neither reads nor scores reserved d_1914–d_1941 targets. For the standard
+experiment, each variant produces 26,880 forecasts (240 series × 4 origins × 28 days).
+
+Outputs:
+
+- `data/processed/seasonal_naive/{last_value,weekly_seasonal}/`: shared
+  `predictions.parquet`, `scored_predictions.parquet`, `metrics.csv`, and
+  `execution_metadata.json`, plus `fit_summary.csv` and `integrity.json`.
+- [Comparison CSV](reports/m5_baseline_comparison.csv): per-origin and pooled
+  MAE/RMSE/WAPE; WAPE remains a ratio. Lowest pooled WAPE determines the winner;
+  exact ties remain ties.
+- [M5 findings](reports/m5_seasonal_naive_findings.md): actual development
+  results, model interpretation, fallback audit and completion checklist.
+- `reports/figures/m5_*.png`: last-value, weekly and combined forecast views for
+  one representative per volume band, plus WAPE by origin. Representatives are
+  chosen alphabetically within existing cutoff-safe cohort bands; plots use the
+  first development origin, 56 training days and 28 development forecast days.
+
+These are common reference points for Kalman, LightGBM and DeepAR under the same
+evaluation contract. Observed sales need not equal unconstrained demand; zeros
+do not establish stockouts. No final-holdout performance is claimed.
+
+The current development evaluation can run from the existing canonical artifacts.
+The separate setup smoke also requires all five original M5 CSVs in `data/raw/`;
+if it names a missing file, supply that original file and rerun the smoke. With a
+uv-created environment, use `uv pip install --python .venv/bin/python -r requirements.txt`
+if dependencies need restoring, since that environment may not include pip.
 
 ## M7 Kalman status
 
@@ -122,6 +185,6 @@ holdout results.
 Per-variant `predictions.parquet`, `scored_predictions.parquet`, `metrics.csv`,
 `execution_metadata.json`, and `fit_summary.csv` are in
 `data/processed/kalman_forecaster/<variant>/`. The M7 comparison CSVs and
-figures are under `reports/` and `reports/figures/`. The next recommended task
-is to implement and evaluate the compatible weekly seasonal-naive baseline;
-do not use the reserved final holdout for model selection.
+figures are under `reports/` and `reports/figures/`. Milestone 5 now supplies
+compatible naive baselines for comparison. Keep the reserved final holdout
+unused while implementing the remaining global-model comparisons.
