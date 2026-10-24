@@ -2,7 +2,7 @@
 
 Forecast daily Walmart product-store sales over 28 days and compare seasonal naive, local Kalman filtering, LightGBM, and DeepAR.
 
-**Status:** Milestones 0–8 (environment, dataset exploration, EDA, preprocessing, development backtesting, seasonal naive baselines, single/multi Kalman filters, and leakage-safe feature engineering) are implemented. Tabular model development (LightGBM) starts at Milestone 9.
+**Status:** Milestones 0–9 (environment, dataset exploration, EDA, preprocessing, development backtesting, seasonal naive baselines, single/multi Kalman filters, leakage-safe feature engineering, and LightGBM gradient boosting) are implemented. Probabilistic deep learning (DeepAR) starts at Milestone 10.
 
 ## 1. Clone and install
 
@@ -35,12 +35,13 @@ Do **not** combine the two sales files: their histories overlap. Raw data is not
 Run from the repository root, with the environment activated:
 
 ```bash
-python -m src.data.understanding      # Audit input data and select 240 series
-python -m src.data.preprocess         # Generate cleaned daily panel
-python -m src.data.eda                # Rebuild EDA outputs (optional)
-python -m src.evaluation.backtesting  # Dummy-model development backtest
-python -m scripts.build_features      # Build M8 leakage-safe feature matrices
-python -m pytest                      # Check tests
+python -m src.data.understanding          # Audit input data and select 240 series
+python -m src.data.preprocess             # Generate cleaned daily panel
+python -m src.data.eda                    # Rebuild EDA outputs (optional)
+python -m src.evaluation.backtesting      # Dummy-model development backtest
+python -m scripts.build_features          # Build M8 leakage-safe feature matrices
+python -m scripts.run_lightgbm_forecaster # Train & evaluate M9 LightGBM model
+python -m pytest                          # Check tests
 ```
 
 Main outputs:
@@ -49,8 +50,10 @@ Main outputs:
 - `data/processed/demand_panel.parquet` — model-ready daily panel
 - `data/processed/panel_metadata.json` — data validation and provenance
 - `data/processed/features/` — M8 leakage-safe feature tables and metadata
+- `data/processed/lightgbm/` — M9 LightGBM predictions, metrics, and feature importance
 - `reports/eda_findings.md` — descriptive analysis
 - `reports/m8_feature_engineering.md` — feature engineering findings and design
+- `reports/m9_lightgbm_findings.md` — LightGBM model findings and comparison
 - `reports/experiment_protocol.md` — experiment rules
 
 For notebook outputs: `python scripts/execute_notebooks.py`.
