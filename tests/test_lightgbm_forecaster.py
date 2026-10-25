@@ -8,6 +8,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+pytest.importorskip("lightgbm", reason="Run the complete model suite with .venv-lightgbm/bin/python")
+
 from src.data.preprocess import run_preprocessing
 from src.evaluation.backtesting import (
     PREDICTION_COLUMNS, construct_inputs, run_backtest,
@@ -152,3 +154,79 @@ class TestTuning:
         assert isinstance(result, dict)
         # Best config must be one of our candidates
         assert result in grid or result == {}
+
+
+def test_saved_model_reloads_without_history_or_refitting(tiny_inputs, tmp_path):
+    from copy import deepcopy
+    import pandas as pd
+    from src.evaluation.backtesting import validate_predictions
+    model = LightGBMForecaster({'n_estimators':5,'n_jobs':1,'min_child_samples':1}).fit(tiny_inputs)
+    expected = model.predict(tiny_inputs)
+    model.save(tmp_path)
+    assert (tmp_path/'model.txt').is_file() and (tmp_path/'state.json').is_file()
+    restored = LightGBMForecaster.load(tmp_path)
+    inference = deepcopy(tiny_inputs)
+    inference.history = inference.history.iloc[:0]
+    actual = restored.predict(inference)
+    pd.testing.assert_frame_equal(actual,expected,check_exact=False,rtol=1e-12,atol=1e-12)
+    validate_predictions(actual,inference.future_known,'lightgbm')
+
+
+def test_saved_booster_and_feature_state_cannot_be_mixed(tiny_inputs,tmp_path):
+    model=LightGBMForecaster({'n_estimators':2,'n_jobs':1}).fit(tiny_inputs)
+    model.save(tmp_path)
+    with (tmp_path/'model.txt').open('a') as stream:
+        stream.write('\n')
+    with pytest.raises(ValueError,match='does not match'):
+        LightGBMForecaster.load(tmp_path)
+
+
+def test_runner_persists_tuning_metadata_models_and_all_fold_states(tiny_panel,tmp_path):
+    import json
+    import pandas as pd
+    from src.models.lightgbm_forecaster import run_lightgbm_forecaster
+    panel,cfg=tiny_panel
+    grid=[{'num_leaves':2,'n_estimators':2},{'num_leaves':3,'n_estimators':3}]
+    predictions,metrics,metadata=run_lightgbm_forecaster(
+        panel,cfg,str(tmp_path/'run'),tune=True,params={'n_jobs':1},tuning_grid=grid)
+    destination=tmp_path/'run'
+    saved=json.loads((destination/'execution_metadata.json').read_text())
+    assert saved==metadata
+    assert saved['tuning_origins']==[6]
+    assert saved['selected_candidate'] in grid
+    assert saved['wall_seconds'] >= saved['tuning_seconds'] + saved['backtest_seconds']
+    tuning=json.loads((destination/'tuning_results.json').read_text())
+    assert len(tuning)==2
+    assert all([fold['origin'] for fold in row['fold_metrics']]==[6] for row in tuning)
+    assert len(saved['model_artifacts'])==2
+    for artifact,fold in zip(saved['model_artifacts'],development_splits(cfg)):
+        inputs=construct_inputs(panel,fold)
+        loaded=LightGBMForecaster.load(destination/artifact['directory'])
+        expected=predictions.loc[predictions.origin.eq(fold.origin)].reset_index(drop=True)
+        pd.testing.assert_frame_equal(loaded.predict(inputs).reset_index(drop=True),expected,
+                                      check_exact=False,rtol=1e-12,atol=1e-12)
+    assert metadata['final_holdout_evaluated'] is False
+    assert predictions.target_day_num.max()==12
+    assert (destination/'fit_summary.csv').is_file()
+
+
+def test_tuning_rejects_unavailable_wape(tiny_panel):
+    panel,cfg=tiny_panel
+    panel=panel.copy()
+    panel['units_sold']=0.0
+    with pytest.raises(ValueError,match='finite tuning WAPE'):
+        tune_hyperparameters(panel,cfg,grid=[{'num_leaves':2,'n_estimators':2,'n_jobs':1}])
+
+
+def test_model_cannot_predict_beyond_trained_horizon(tiny_inputs):
+    from dataclasses import replace
+    model=LightGBMForecaster({'n_estimators':2,'n_jobs':1}).fit(tiny_inputs)
+    with pytest.raises(ValueError,match='exceeds the trained horizon'):
+        model.predict(replace(tiny_inputs,horizon=tiny_inputs.horizon+1))
+
+
+def test_direct_model_rejects_missing_training_horizons(tiny_inputs):
+    from dataclasses import replace
+    short=replace(tiny_inputs,history=tiny_inputs.history.loc[tiny_inputs.history.day_num.le(2)].copy(),origin=2)
+    with pytest.raises(ValueError,match='every configured horizon'):
+        LightGBMForecaster({'n_estimators':2,'n_jobs':1}).fit(short)

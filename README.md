@@ -1,7 +1,7 @@
 # Inventory Demand Forecasting via Kalman Filtering and Global DeepAR Models
 
 See the [2026-10-25 milestone verification](reports/milestone_verification.md)
-for tested completion status, commands, and outstanding M0/M6/M8/M9 requirements.
+for tested completion status, commands, and remaining M0/M6 requirements.
 
 Milestones **0–4** implement data understanding, cutoff-safe EDA, a reproducible daily panel and a shared development backtester. Milestone **5** adds last-value and weekly seasonal naive point baselines. Milestones **6–7** add independent per-series Kalman development models. The wider comparison includes these baselines, per-series Kalman, global LightGBM and probabilistic DeepAR; naive and Kalman development evaluations are documented below.
 
@@ -51,9 +51,9 @@ python -m scripts.build_features
 # M8 tests
 python -m pytest tests/test_feature_engineering.py
 # M9: train and evaluate LightGBM forecaster with rolling-validation tuning
-python -m scripts.run_lightgbm_forecaster
+.venv-lightgbm/bin/python -m scripts.run_lightgbm_forecaster
 # M9 tests
-python -m pytest tests/test_lightgbm_forecaster.py
+.venv-lightgbm/bin/python -m pytest tests/test_lightgbm_forecaster.py
 # Execute and save outputs in both notebooks using this environment's kernel
 python scripts/execute_notebooks.py
 # Unit, synthetic integration and leakage tests
@@ -206,34 +206,64 @@ figures are under `reports/` and `reports/figures/`. Milestone 5 now supplies
 compatible naive baselines for comparison. Keep the reserved final holdout
 unused while implementing the remaining global-model comparisons.
 
-## M8 Feature Engineering status
+## M8 feature engineering status
 
-Milestone 8 implements leakage-safe feature engineering for tabular gradient boosting models.
-The module `src.features.feature_engineering.FeatureEngineer` processes `ForecastInputs`
-and generates 26 predictor columns:
-- **Lags**: 1, 7, 14, 28 days (for multi-step forecasting, unknown future observations are set to NaN)
-- **Rolling statistics**: 7, 14, 28-day means and standard deviations
-- **Calendar & events**: day of week, day of month, week of year, month, year, weekend flag, named event indicators
-- **SNAP indicator**: state-specific SNAP benefits (conservatively 0 in future predictions)
-- **Price features**: last known shelf price and 7-day price change ratio
-- **Categorical encodings**: integer mappings for `item_id`, `store_id`, `dept_id`, `cat_id`, `state_id`
+The repaired `FeatureEngineer` provides 26 base predictors and direct supervised
+examples with an observed horizon. Prices and historical SNAP stop at each
+example's forecast origin, missing events are absent, and unavailable future
+lags remain NaN. Training and inference use the same frozen-origin contract.
 
-Feature matrices for all four development folds are exported to `data/processed/features/` with full provenance metadata in `feature_metadata.json`. Detailed findings and analysis are documented in [M8 feature report](reports/m8_feature_engineering.md).
+Version-2 feature exports include series/origin/horizon/day/date keys, labels,
+configuration provenance and actual training-origin lists. Regenerate them with:
+
+```bash
+.venv/bin/python -m scripts.build_features
+```
+
+See [M8 feature report](reports/m8_feature_engineering.md) for formulas,
+training cadence, dataset dimensions and regression checks.
 
 ## M9 LightGBM status
 
-Milestone 9 implements a direct multi-horizon gradient boosting forecaster using LightGBM (`src.models.lightgbm_forecaster.LightGBMForecaster`).
-Trained with L1 regression objective and rolling-validation hyperparameter selection across folds 1–3, the selected model (`num_leaves=127, learning_rate=0.03, n_estimators=700`) outperforms all statistical and heuristic baselines:
+M9 trains one global direct-horizon LightGBM per fold on historical 28-day
+blocks, with real horizons 1–28. Rolling tuning uses pooled WAPE on the first
+three development folds. The final development fold is excluded from selection;
+the reserved final holdout remains untouched.
 
-| Model | Model Family | Pooled MAE | Pooled RMSE | Pooled WAPE |
-| :--- | :--- | :---: | :---: | :---: |
-| **LightGBM (Tuned)** | **Global GBDT** | **0.9874** | **2.3995** | **0.8176** |
-| `kalman_local_level_seasonal` | State-Space Filter | 1.0007 | 2.0535 | 0.8286 |
-| `kalman_local_trend_seasonal` | State-Space Filter | 1.0030 | 2.0576 | 0.8305 |
-| `kalman_local_level` | State-Space Filter | 1.0106 | 2.0613 | 0.8368 |
-| `naive_weekly_seasonal` | Heuristic Baseline | 1.1869 | 2.5487 | 0.9828 |
-| `naive_last_value` | Heuristic Baseline | 1.2479 | 2.5151 | 1.0332 |
+The verified selected candidate is `{"learning_rate": 0.05, "n_estimators": 500, "num_leaves": 31}`.
+Pooled development results:
 
-Outputs and artifacts are saved in `data/processed/lightgbm/` (`predictions.parquet`, `scored_predictions.parquet`, `metrics.csv`, `feature_importance.csv`, `comparison_metrics.csv`). Comprehensive findings are documented in [M9 LightGBM findings](reports/m9_lightgbm_findings.md).
+| Model | MAE | RMSE | WAPE ratio |
+| --- | --- | --- | --- |
+| lightgbm | 0.922736 | 2.108136 | 0.763996 |
+| kalman_local_level_seasonal | 1.000711 | 2.053497 | 0.828557 |
+| kalman_local_trend_seasonal | 1.003014 | 2.057588 | 0.830464 |
+| kalman_local_level | 1.010637 | 2.061347 | 0.836776 |
+| kalman_single_sku | 1.011527 | 2.077604 | 0.837512 |
+| kalman_local_trend | 1.022487 | 2.097607 | 0.846587 |
+| naive_weekly_seasonal | 1.186942 | 2.548744 | 0.982751 |
+| naive_last_value | 1.247879 | 2.515066 | 1.033205 |
 
+These are development comparisons; selection folds also contribute to the
+pooled score. Full results and limitations are in
+[M9 LightGBM findings](reports/m9_lightgbm_findings.md).
 
+```bash
+.venv-lightgbm/bin/python -m scripts.run_lightgbm_forecaster
+.venv-lightgbm/bin/python -m pytest
+```
+
+Outputs under `data/processed/lightgbm/` include shared predictions/metrics,
+`tuning_results.json`, `fit_summary.csv`, feature importance, comparisons and
+persisted execution metadata including total/tuning/backtest times. Each fold
+also saves `models/origin_<day>/model.txt` and complete JSON feature state.
+
+```python
+from src.models.lightgbm_forecaster import LightGBMForecaster
+model = LightGBMForecaster.load("data/processed/lightgbm/models/origin_1801")
+prediction = model.predict(inputs)  # inputs for origin 1801
+```
+
+All four saved bundles reproduce their original forecasts. Quantiles remain
+unavailable for this point model. The baseline suite skips optional LightGBM
+checks when that package is absent; the dedicated environment runs all 231 tests.

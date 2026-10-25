@@ -1,8 +1,4 @@
-"""Outstanding M8/M9 contracts found by the milestone audit.
-
-Strict expected failures keep these gaps visible without changing experimental
-results during an audit. Remove a marker when its underlying model is fixed.
-"""
+"""Regression checks for the repaired M8/M9 forecasting contracts."""
 from copy import deepcopy
 
 import numpy as np
@@ -14,8 +10,6 @@ from src.evaluation.splits import development_splits
 from src.features.feature_engineering import FeatureEngineer, _encode_calendar
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="M8 training prices use the label day's actual price, unavailable before that day")
 def test_training_features_do_not_use_label_day_price(tiny_panel):
     panel, cfg = tiny_panel
     inputs = construct_inputs(panel, development_splits(cfg)[0])
@@ -31,16 +25,12 @@ def test_training_features_do_not_use_label_day_price(tiny_panel):
     pd.testing.assert_frame_equal(before, after)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="M8 marks None, pd.NA and NaN event values as events")
 def test_missing_events_are_encoded_as_absent():
     calendar = pd.DataFrame({"date": pd.date_range("2020-01-01", periods=4),
                              "event_name_1": [None, pd.NA, np.nan, ""]})
     assert _encode_calendar(calendar).has_event_name_1.tolist() == [0, 0, 0, 0]
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason="M9's claimed horizon-aware model trains every horizon as NaN")
 def test_multi_horizon_model_trains_on_observed_horizons(tiny_panel, monkeypatch):
     lgb = pytest.importorskip("lightgbm")
     from src.models.lightgbm_forecaster import LightGBMForecaster

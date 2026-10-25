@@ -5,7 +5,7 @@
   "milestones": {
     "0": {
       "status": "partial",
-      "reason": "Fresh baseline works and optional stacks import; FilterPy is installed separately but has no pinned manifest, and baseline full pytest cannot collect LightGBM tests."
+      "reason": "Fresh baseline and optional stacks work; FilterPy is installed separately but has no pinned manifest. Optional LightGBM test collection is now handled explicitly."
     },
     "1": {
       "status": "complete",
@@ -36,15 +36,157 @@
       "reason": "All four independent variants have validated 26880-row development artifacts and passing synthetic tests."
     },
     "8": {
-      "status": "partial",
-      "reason": "Four-fold feature generation works; target-day actual-price use and incorrect missing-event encoding fail independent contracts."
+      "status": "complete",
+      "reason": "Origin-safe direct training/prediction features, price/calendar/event fixes and version-2 exports pass regression and real-data checks."
     },
     "9": {
-      "status": "partial",
-      "reason": "Full tuning/backtest works; horizon feature is never observed during training, models are not saved, and added tuning metadata is not persisted."
+      "status": "complete",
+      "reason": "Actual horizon-supervised training, rolling tuning, full scoring, native model round trips and persisted enriched metadata verified."
     }
   },
   "contract_checks": {
+    "target_day_price_invariance": {
+      "passed": true,
+      "changed_columns": []
+    },
+    "missing_event_flags": {
+      "passed": true,
+      "actual": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "horizon_feature_learnable": {
+      "passed": true,
+      "observed_training_horizons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28
+      ]
+    }
+  },
+  "fresh_environment": {
+    "python": "3.14.6",
+    "install": "passed (59 pinned baseline packages, offline cache)",
+    "smoke": "passed"
+  },
+  "readiness": {
+    "required_raw_files": 4,
+    "required_total_files": 8,
+    "series": 240,
+    "development_folds": 4,
+    "prediction_rows": 26880,
+    "max_target_day": 1913,
+    "final_holdout_evaluated": false
+  },
+  "execution": {
+    "notebooks": [
+      "01_dataset_understanding.ipynb",
+      "02_eda.ipynb"
+    ],
+    "notebook_execution": "passed",
+    "canonical_config_cohort_panel_bytes_preserved": true,
+    "feature_generation": "passed, all four folds",
+    "lightgbm_tuning_and_backtest": "Fresh repaired-feature tuning and full four-fold backtest passed.",
+    "main_streamlit_app": "Unchanged; syntax compilation passed; UI runtime is outside the supplied M0\u2013M9 checklist.",
+    "development_panel_validation": {
+      "rows": 459120,
+      "series": 240,
+      "days_per_series": 1913,
+      "day_start": 1,
+      "day_end": 1913,
+      "date_start": "2011-01-29",
+      "date_end": "2016-04-24",
+      "duplicate_series_days": 0,
+      "missing_indexed_rows": 0,
+      "missing_targets": 0,
+      "checks": "unique keys, continuity, day/date mapping, static metadata, target/price domain, zero/missing flags",
+      "holdout_policy": "Only mechanical integrity/missingness checks on holdout; no target distribution or performance analysis."
+    }
+  },
+  "observed_lightgbm": {
+    "status": "passed",
+    "model_roundtrips": 4,
+    "predictions": 26880,
+    "training_feature_version": 2,
+    "all_training_horizons_observed": true,
+    "tuning_origins": [
+      1801,
+      1829,
+      1857
+    ],
+    "selected_candidate": {
+      "num_leaves": 31,
+      "learning_rate": 0.05,
+      "n_estimators": 500
+    },
+    "wall_seconds": 239.42332149999856,
+    "tuning_seconds": 211.29976141700172,
+    "backtest_seconds": 28.1074962910061,
+    "mae": 0.9227355342844346,
+    "rmse": 2.1081355424428043,
+    "wape": 0.7639960314666749,
+    "max_target_day": 1913,
+    "final_holdout_evaluated": false,
+    "trained_models_saved": true,
+    "selected_params_saved_in_execution_json": true
+  },
+  "test_runs": {
+    "baseline": {
+      "collected": 213,
+      "passed": 211,
+      "skipped": 2,
+      "expected_failures": 0,
+      "errors": 0,
+      "failures": 0,
+      "seconds": 225.009
+    },
+    "lightgbm_environment_initial": {
+      "passed": 214,
+      "warnings": 12
+    },
+    "input_audit_and_smoke": {
+      "passed": 5
+    },
+    "final": {
+      "collected": 231,
+      "passed": 231,
+      "skipped": 0,
+      "expected_failures": 0,
+      "errors": 0,
+      "failures": 0,
+      "seconds": 229.943
+    }
+  },
+  "commit_audited": "2ede2d1a6f7c07258fa1d7518859a481b523623f",
+  "previous_contract_checks": {
     "target_day_price_invariance": {
       "passed": false,
       "changed_columns": {
@@ -74,77 +216,37 @@
       "training_source": "LightGBMForecaster.fit assigns NaN to every training horizon."
     }
   },
-  "fresh_environment": {
-    "python": "3.14.6",
-    "install": "passed (59 pinned baseline packages, offline cache)",
-    "smoke": "passed"
-  },
-  "readiness": {
-    "required_raw_files": 4,
-    "required_total_files": 8,
-    "series": 240,
-    "development_folds": 4,
-    "prediction_rows": 26880,
-    "max_target_day": 1913,
-    "final_holdout_evaluated": false
-  },
-  "execution": {
-    "notebooks": [
-      "01_dataset_understanding.ipynb",
-      "02_eda.ipynb"
+  "m8_m9_repair_verification": {
+    "status": "passed",
+    "model_roundtrips": 4,
+    "predictions": 26880,
+    "training_feature_version": 2,
+    "all_training_horizons_observed": true,
+    "tuning_origins": [
+      1801,
+      1829,
+      1857
     ],
-    "notebook_execution": "passed",
-    "canonical_config_cohort_panel_bytes_preserved": true,
-    "feature_generation": "passed, all four folds",
-    "lightgbm_tuning_and_backtest": "Earlier same-day fit on identical forecasting source; saved outputs independently revalidated on main. Contracts remain incomplete.",
-    "main_streamlit_app": "Unchanged; syntax compilation passed; UI runtime is outside the supplied M0\u2013M9 checklist.",
-    "development_panel_validation": {
-      "rows": 459120,
-      "series": 240,
-      "days_per_series": 1913,
-      "day_start": 1,
-      "day_end": 1913,
-      "date_start": "2011-01-29",
-      "date_end": "2016-04-24",
-      "duplicate_series_days": 0,
-      "missing_indexed_rows": 0,
-      "missing_targets": 0,
-      "checks": "unique keys, continuity, day/date mapping, static metadata, target/price domain, zero/missing flags",
-      "holdout_policy": "Only mechanical integrity/missingness checks on holdout; no target distribution or performance analysis."
-    }
-  },
-  "observed_lightgbm": {
-    "selected_params": {
-      "num_leaves": 63,
+    "selected_candidate": {
+      "num_leaves": 31,
       "learning_rate": 0.05,
       "n_estimators": 500
     },
-    "mae": 0.985352,
-    "rmse": 2.380505,
-    "wape": 0.815841,
-    "rows": 26880,
-    "trained_models_saved": false,
-    "selected_params_saved_in_execution_json": false
+    "wall_seconds": 239.42332149999856,
+    "tuning_seconds": 211.29976141700172,
+    "backtest_seconds": 28.1074962910061,
+    "mae": 0.9227355342844346,
+    "rmse": 2.1081355424428043,
+    "wape": 0.7639960314666749,
+    "max_target_day": 1913,
+    "final_holdout_evaluated": false
   },
-  "test_runs": {
-    "baseline": "collection error: LightGBM missing in isolated baseline environment",
-    "lightgbm_environment_initial": {
-      "passed": 214,
-      "warnings": 12
-    },
-    "input_audit_and_smoke": {
-      "passed": 5
-    },
-    "final": {
-      "collected": 218,
-      "passed": 215,
-      "expected_failures": 3,
-      "errors": 0,
-      "unexpected_failures": 0,
-      "warnings": 12,
-      "seconds": 111.323,
-      "command": ".venv-lightgbm/bin/python -m pytest --junitxml=/tmp/aml-main-milestone-audit.xml"
-    }
-  },
-  "commit_audited": "2ede2d1a6f7c07258fa1d7518859a481b523623f"
+  "verification_scope": "main working tree including M8/M9 repairs",
+  "working_tree_repairs": true,
+  "previous_baseline_collection_issue": "Resolved: optional LightGBM test module and contract test skip explicitly when the package is absent; full stack runs all checks.",
+  "git_base_commit": "f76fad88d69354185e9f3b760be47378a3b7fb20",
+  "verified_source_sha256": {
+    "src/features/feature_engineering.py": "98404a4fbb3eda6729155a648c3f75c7eee9c6d3283ad3c5a7a4cd764bb68149",
+    "src/models/lightgbm_forecaster.py": "da903712b804247f58a2a4726d724a3f5eda5bbb9e1e68384c1722ea3e560bc5"
+  }
 }

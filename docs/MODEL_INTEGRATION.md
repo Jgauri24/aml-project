@@ -1,6 +1,6 @@
 # Model integration contract
 
-Use the existing data and evaluation code as the common boundary for parallel model development. The seed, cohort, chronological windows, metric definitions and final-holdout reservation remain those in `experiment.yaml` and [the experiment protocol](../reports/experiment_protocol.md). No Kalman, LightGBM or DeepAR adapter is implemented here.
+Use the existing data and evaluation code as the common boundary for model development. The seed, cohort, chronological windows, metric definitions and final-holdout reservation remain those in `experiment.yaml` and [the experiment protocol](../reports/experiment_protocol.md). Kalman and LightGBM adapters now use this contract; DeepAR remains a later milestone.
 
 ## Start here
 
@@ -147,6 +147,36 @@ The original dummy command remains `python -m src.evaluation.backtesting`. The e
 The engine excludes final-holdout rows before constructing any development fold. **d_1914–d_1941 remains reserved**; do not call a private/final evaluation path, change the origins, or use holdout scores to choose models.
 
 ## Parallel ownership and review checklist
+
+The M8/M9 direct-horizon implementation trains on historical origin blocks,
+with real horizons 1–28 and exactly the same feature availability as prediction.
+Prices and historical SNAP are frozen at each origin; future actual prices,
+SNAP and sales remain excluded. Missing event values are not positive flags.
+
+Run the complete model tests in the optional LightGBM environment:
+
+```bash
+.venv-lightgbm/bin/python -m pytest
+.venv-lightgbm/bin/python -m scripts.run_lightgbm_forecaster
+```
+
+Each LightGBM fold saves `models/origin_<day>/model.txt` and `state.json` under
+its output directory. The JSON includes category mappings, frozen origin
+features, recent historical sales, trained horizon, parameters and a booster
+checksum. Reloading does not refit encoders or read raw actuals:
+
+```python
+from src.models.lightgbm_forecaster import LightGBMForecaster
+model = LightGBMForecaster.load("data/processed/lightgbm/models/origin_1801")
+prediction = model.predict(inputs)  # inputs must request this fitted origin
+```
+
+The model rejects a different origin or a horizon beyond the one it trained on.
+The base test suite explicitly skips optional LightGBM tests when that package
+is absent; the dedicated environment runs all model checks. See the updated
+[feature report](../reports/m8_feature_engineering.md) and
+[LightGBM findings](../reports/m9_lightgbm_findings.md) for training cadence,
+tuning boundaries and artifact schemas.
 
 Develop separate adapters/tests on separate branches, each implementing the shared interface. Keep optional imports inside the adapter module so the baseline smoke/test suite never needs LightGBM, torch or GluonTS. Use a separate virtual environment for each dependency stack; see [compatibility notes](DEPENDENCIES.md).
 

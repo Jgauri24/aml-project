@@ -111,7 +111,7 @@ class TestPriceFeatures:
             "sell_price": [1.0, np.nan, np.nan, 2.0, np.nan],
         })
         result = _price_features_train(df)
-        assert list(result["last_known_price"]) == [1.0, 1.0, 1.0, 2.0, 2.0]
+        np.testing.assert_allclose(result["last_known_price"], [np.nan, 1.0, 1.0, 1.0, 2.0], equal_nan=True)
 
 
 # ── Integration with ForecastInputs ─────────────────────────────────────────
