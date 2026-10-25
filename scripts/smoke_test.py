@@ -35,7 +35,7 @@ def check_required_files(cfg):
     if missing:
         raise FileNotFoundError(
             "Missing or empty required files:\n" + "\n".join(missing)
-            + "\nCopy the five original M5 CSVs to the configured raw directory. "
+            + f"\nCopy the {len(EXPECTED_FILES)} required M5 CSVs to the configured raw directory. "
             "If processed artifacts are missing, run python -m src.data.preprocess. "
             "The smoke test does not download or rebuild data."
         )

@@ -8,7 +8,7 @@ Prepare a fair comparison of weekly seasonal naive, per-series Kalman, global Li
 
 ## Data boundary and source integrity
 
-The existing five M5 CSVs are used; nothing is downloaded. `sales_train_evaluation.csv` alone supplies the canonical observed sales. The validation file overlaps exactly through d_1913 (30,490 series × 1,913 days = 58,327,370 target cells); its suffix-dependent `id` is excluded from the comparison. Both sales keys, calendar `d`/date, and weekly price composite keys are checked for uniqueness. Sales sources are never concatenated.
+The existing four M5 CSVs are used; nothing is downloaded. `sales_train_evaluation.csv` alone supplies the canonical observed sales. The validation file overlaps exactly through d_1913 (30,490 series × 1,913 days = 58,327,370 target cells); its suffix-dependent `id` is excluded from the comparison. Both sales keys, calendar `d`/date, and weekly price composite keys are checked for uniqueness. Sales sources are never concatenated.
 
 Raw shape/schema inspection and mechanical integrity checks are allowed over the file structure. Target previews, missingness inspection in the understanding notebook, selection statistics, representative choice and EDA stop at d_1801. The explicit source-integrity comparison through d_1913 is not an EDA, selection or tuning input. The full selected panel stores d_1–d_1941 to avoid a later alternate preprocessing path; final targets are only mechanically validated (keys, continuity, domain and missingness), never analyzed or evaluated. The development CLI uses Parquet filtering through d_1913, and the engine again removes later rows before building any fold.
 
@@ -53,7 +53,7 @@ All training windows expand from d_1. Horizon is 28; development target windows 
 | 1885 | d_1–d_1885 | d_1886–d_1913 | 2016-03-28–2016-04-24 |
 | **Reserved** 1913 | d_1–d_1913 | **d_1914–d_1941** | **2016-04-25–2016-05-22** |
 
-The final row is documentation only. There is no final-evaluation switch in the development CLI. It must remain unused until later modeling, tuning and protocol choices are frozen. The competition's sample-submission validation/evaluation suffixes do not change this project's split definitions.
+The final row is documentation only. There is no final-evaluation switch in the development CLI. It must remain unused until later modeling, tuning and protocol choices are frozen. Sales-file validation/evaluation suffixes do not change this project's split definitions.
 
 ## Feature availability and model interface
 

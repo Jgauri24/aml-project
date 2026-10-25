@@ -1,5 +1,8 @@
 # Inventory Demand Forecasting via Kalman Filtering and Global DeepAR Models
 
+See the [2026-10-25 milestone verification](reports/milestone_verification.md)
+for tested completion status, commands, and outstanding M0/M6/M8/M9 requirements.
+
 Milestones **0–4** implement data understanding, cutoff-safe EDA, a reproducible daily panel and a shared development backtester. Milestone **5** adds last-value and weekly seasonal naive point baselines. Milestones **6–7** add independent per-series Kalman development models. The wider comparison includes these baselines, per-series Kalman, global LightGBM and probabilistic DeepAR; naive and Kalman development evaluations are documented below.
 
 ## Setup
@@ -20,7 +23,7 @@ uv pip install --python .venv/bin/python -r requirements.txt
 source .venv/bin/activate
 ```
 
-The existing CSVs belong in `data/raw/`: `calendar.csv`, `sell_prices.csv`, `sales_train_validation.csv`, `sales_train_evaluation.csv`, `sample_submission.csv`. Do not concatenate the two overlapping sales files; evaluation is the sole canonical source. Raw CSVs and generated datasets are excluded from Git.
+The existing CSVs belong in `data/raw/`: `calendar.csv`, `sell_prices.csv`, `sales_train_validation.csv`, `sales_train_evaluation.csv`. Do not concatenate the two overlapping sales files; evaluation is the sole canonical source. Raw CSVs and generated datasets are excluded from Git.
 
 ## Reproduce from the repository root
 
@@ -177,7 +180,7 @@ evaluation contract. Observed sales need not equal unconstrained demand; zeros
 do not establish stockouts. No final-holdout performance is claimed.
 
 The current development evaluation can run from the existing canonical artifacts.
-The separate setup smoke also requires all five original M5 CSVs in `data/raw/`;
+The separate setup smoke also requires all four original M5 CSVs in `data/raw/`;
 if it names a missing file, supply that original file and rerun the smoke. With a
 uv-created environment, use `uv pip install --python .venv/bin/python -r requirements.txt`
 if dependencies need restoring, since that environment may not include pip.

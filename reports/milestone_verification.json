@@ -1,0 +1,150 @@
+{
+  "date": "2026-10-25",
+  "branch": "main",
+  "scope": "Milestones 0\u20139; analytical input cleanup; no final-holdout evaluation",
+  "milestones": {
+    "0": {
+      "status": "partial",
+      "reason": "Fresh baseline works and optional stacks import; FilterPy is installed separately but has no pinned manifest, and baseline full pytest cannot collect LightGBM tests."
+    },
+    "1": {
+      "status": "complete",
+      "reason": "Source audit, dataset notebook and deterministic 240-series selection verified."
+    },
+    "2": {
+      "status": "complete",
+      "reason": "EDA notebook executed; five demand findings and volume/intermittency segmentation reproduced."
+    },
+    "3": {
+      "status": "complete",
+      "reason": "Canonical panel retained; 459120 development rows validated for continuity, keys, flags and domains."
+    },
+    "4": {
+      "status": "complete",
+      "reason": "Shared four-origin, 28-day experiment, metrics, prediction grid and leakage tests pass."
+    },
+    "5": {
+      "status": "complete",
+      "reason": "Both naive variants rerun; 26880 predictions each, exact-grid checks passed."
+    },
+    "6": {
+      "status": "partial",
+      "reason": "Local-level filter, forecasts, intervals and tests work; required 06_kalman_single_sku.ipynb is missing."
+    },
+    "7": {
+      "status": "complete",
+      "reason": "All four independent variants have validated 26880-row development artifacts and passing synthetic tests."
+    },
+    "8": {
+      "status": "partial",
+      "reason": "Four-fold feature generation works; target-day actual-price use and incorrect missing-event encoding fail independent contracts."
+    },
+    "9": {
+      "status": "partial",
+      "reason": "Full tuning/backtest works; horizon feature is never observed during training, models are not saved, and added tuning metadata is not persisted."
+    }
+  },
+  "contract_checks": {
+    "target_day_price_invariance": {
+      "passed": false,
+      "changed_columns": {
+        "last_known_price": 1
+      },
+      "expected": "A training label day must not use its own actual price when predicting before that day."
+    },
+    "missing_event_flags": {
+      "passed": false,
+      "actual": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "expected": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "horizon_feature_learnable": {
+      "passed": false,
+      "horizon_feature_in_booster_data": false,
+      "horizon_split_count": 0,
+      "training_source": "LightGBMForecaster.fit assigns NaN to every training horizon."
+    }
+  },
+  "fresh_environment": {
+    "python": "3.14.6",
+    "install": "passed (59 pinned baseline packages, offline cache)",
+    "smoke": "passed"
+  },
+  "readiness": {
+    "required_raw_files": 4,
+    "required_total_files": 8,
+    "series": 240,
+    "development_folds": 4,
+    "prediction_rows": 26880,
+    "max_target_day": 1913,
+    "final_holdout_evaluated": false
+  },
+  "execution": {
+    "notebooks": [
+      "01_dataset_understanding.ipynb",
+      "02_eda.ipynb"
+    ],
+    "notebook_execution": "passed",
+    "canonical_config_cohort_panel_bytes_preserved": true,
+    "feature_generation": "passed, all four folds",
+    "lightgbm_tuning_and_backtest": "Earlier same-day fit on identical forecasting source; saved outputs independently revalidated on main. Contracts remain incomplete.",
+    "main_streamlit_app": "Unchanged; syntax compilation passed; UI runtime is outside the supplied M0\u2013M9 checklist.",
+    "development_panel_validation": {
+      "rows": 459120,
+      "series": 240,
+      "days_per_series": 1913,
+      "day_start": 1,
+      "day_end": 1913,
+      "date_start": "2011-01-29",
+      "date_end": "2016-04-24",
+      "duplicate_series_days": 0,
+      "missing_indexed_rows": 0,
+      "missing_targets": 0,
+      "checks": "unique keys, continuity, day/date mapping, static metadata, target/price domain, zero/missing flags",
+      "holdout_policy": "Only mechanical integrity/missingness checks on holdout; no target distribution or performance analysis."
+    }
+  },
+  "observed_lightgbm": {
+    "selected_params": {
+      "num_leaves": 63,
+      "learning_rate": 0.05,
+      "n_estimators": 500
+    },
+    "mae": 0.985352,
+    "rmse": 2.380505,
+    "wape": 0.815841,
+    "rows": 26880,
+    "trained_models_saved": false,
+    "selected_params_saved_in_execution_json": false
+  },
+  "test_runs": {
+    "baseline": "collection error: LightGBM missing in isolated baseline environment",
+    "lightgbm_environment_initial": {
+      "passed": 214,
+      "warnings": 12
+    },
+    "input_audit_and_smoke": {
+      "passed": 5
+    },
+    "final": {
+      "collected": 218,
+      "passed": 215,
+      "expected_failures": 3,
+      "errors": 0,
+      "unexpected_failures": 0,
+      "warnings": 12,
+      "seconds": 111.323,
+      "command": ".venv-lightgbm/bin/python -m pytest --junitxml=/tmp/aml-main-milestone-audit.xml"
+    }
+  },
+  "commit_audited": "2ede2d1a6f7c07258fa1d7518859a481b523623f"
+}

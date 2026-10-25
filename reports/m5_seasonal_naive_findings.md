@@ -104,11 +104,11 @@ Synthetic tests cover exact 28-day patterns, calendar gaps, zero/missing and
 nonfinite observations, weekday/overall/zero fallbacks, schema and origin
 checks, deterministic outputs, input immutability, factory isolation, shared
 scoring, saved artifacts, CLI orchestration and exclusion of held-out targets.
-The smoke check independently requires all five original raw CSVs, even though
+The smoke check independently requires all four original raw CSVs, even though
 these baselines consume the existing canonical panel. Its setup status must be
 reported separately from the development evaluation.
 
-All five required original raw CSVs are present and nonempty.
+All four required original raw CSVs are present and nonempty.
 
 ### Verification recorded on 2026-10-24
 
@@ -121,10 +121,9 @@ All five required original raw CSVs are present and nonempty.
   coverage, dates, direct historical forecast values, evaluator actual joins,
   shared per-origin/pooled metrics, unavailable quantiles and final-holdout exclusion.
 - `.venv/bin/python -m scripts.smoke_test`: **passed** after the user supplied
-  `data/raw/sales_train_validation.csv`. All 18 imports and nine required files
+  `data/raw/sales_train_validation.csv`. Imports and required files
   passed; the shared dummy produced 26,880 × 10 predictions across 240 series
   and four folds, with maximum target day 1913 and `final_holdout_evaluated=false`.
-  `sample_submission.csv` was copied from the existing local dataset folder.
 - The supplied validation CSV's header was checked through d_1913. No prior
   validation-file source hash exists in the canonical panel metadata, so no
   historical byte-for-byte source match is claimed.

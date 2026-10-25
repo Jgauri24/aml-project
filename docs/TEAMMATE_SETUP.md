@@ -18,7 +18,7 @@ GitHub credentials/repository permission are required if access is restricted. U
 
 ## Supply existing local M5 data
 
-The five original CSVs are ignored by Git and therefore **not present in a fresh clone**. Obtain the already-downloaded, authorized M5 files from your local/team copy; do not expect notebooks to download data.
+The four original CSVs are ignored by Git and therefore **not present in a fresh clone**. Obtain the already-downloaded, authorized M5 files from your local/team copy; do not expect notebooks to download data.
 
 Replace `/path/to/existing/m5` below with the folder containing the original CSVs:
 
@@ -27,7 +27,6 @@ cp /path/to/existing/m5/calendar.csv data/raw/
 cp /path/to/existing/m5/sell_prices.csv data/raw/
 cp /path/to/existing/m5/sales_train_validation.csv data/raw/
 cp /path/to/existing/m5/sales_train_evaluation.csv data/raw/
-cp /path/to/existing/m5/sample_submission.csv data/raw/
 ```
 
 Before preparation, `python -m scripts.smoke_test` intentionally fails with the missing processed-file names and preparation instructions. The unit/integration tests use synthetic fixtures and can run without M5 data.

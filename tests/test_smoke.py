@@ -16,6 +16,7 @@ def test_smoke_runs_shared_development_engine_without_writes(tiny_project):
     result = run_smoke(cfg)
     after = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}
     assert result["status"] == "passed"
+    assert result["required_files"] == 8
     assert result["prediction_rows"] == 18 and result["max_target_day"] == 12
     assert not result["final_holdout_evaluated"] and not result["output_files_written"]
     assert before == after

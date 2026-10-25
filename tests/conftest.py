@@ -43,11 +43,6 @@ def tiny_project(tmp_path):
                            for item, store in zip(sales.item_id, sales.store_id)
                            for week in [11101, 11102, 11103] if not (item == "A" and week == 11101)])
     prices.to_csv(raw / "sell_prices.csv", index=False)
-    submission = pd.DataFrame({"id": [f"{item}_{store}_{suffix}" for suffix in ["validation", "evaluation"]
-                                      for item, store in zip(sales.item_id, sales.store_id)]})
-    for step in range(1, 4):
-        submission[f"F{step}"] = 0
-    submission.to_csv(raw / "sample_submission.csv", index=False)
     return cfg, raw
 
 

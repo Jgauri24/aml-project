@@ -179,7 +179,7 @@ def write_findings(
     setup_status = ("Raw-file setup remains incomplete: missing "
                     + ", ".join(f"`{name}`" for name in missing_raw)
                     + ". Supply the original files in `data/raw/` and rerun the smoke command."
-                    if missing_raw else "All five required original raw CSVs are present and nonempty.")
+                    if missing_raw else f"All {len(EXPECTED_FILES)} required original raw CSVs are present and nonempty.")
     text = f"""# Milestone 5: seasonal naive development findings
 
 ## Objective and implementation
@@ -265,7 +265,7 @@ Synthetic tests cover exact 28-day patterns, calendar gaps, zero/missing and
 nonfinite observations, weekday/overall/zero fallbacks, schema and origin
 checks, deterministic outputs, input immutability, factory isolation, shared
 scoring, saved artifacts, CLI orchestration and exclusion of held-out targets.
-The smoke check independently requires all five original raw CSVs, even though
+The smoke check independently requires all {len(EXPECTED_FILES)} original raw CSVs, even though
 these baselines consume the existing canonical panel. Its setup status must be
 reported separately from the development evaluation.
 

@@ -12,7 +12,7 @@ python -m scripts.smoke_test
 python -m examples.constant_forecaster --output-dir integration_example
 ```
 
-The smoke command checks project imports, the five raw CSVs and four canonical preparation artifacts, then runs the existing dummy over all development folds **in memory**. It neither downloads/rebuilds data nor writes forecasts. With the established configuration it reports 240 series, four folds and 26,880 × 10 predictions; no target exceeds d_1913. Missing/stale artifacts cause a nonzero exit with a useful error. See [teammate setup](TEAMMATE_SETUP.md) if starting from a clone and [dependency compatibility](DEPENDENCIES.md) before installing model libraries.
+The smoke command checks project imports, the four raw CSVs and four canonical preparation artifacts, then runs the existing dummy over all development folds **in memory**. It neither downloads/rebuilds data nor writes forecasts. With the established configuration it reports 240 series, four folds and 26,880 × 10 predictions; no target exceeds d_1913. Missing/stale artifacts cause a nonzero exit with a useful error. See [teammate setup](TEAMMATE_SETUP.md) if starting from a clone and [dependency compatibility](DEPENDENCIES.md) before installing model libraries.
 
 ## BaseForecaster and model factories
 

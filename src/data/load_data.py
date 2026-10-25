@@ -11,7 +11,7 @@ CALENDAR_COLUMNS = ["date", "wm_yr_wk", "weekday", "wday", "month", "year", "d",
                     "snap_CA", "snap_TX", "snap_WI"]
 PRICE_COLUMNS = ["store_id", "item_id", "wm_yr_wk", "sell_price"]
 EXPECTED_FILES = ["calendar.csv", "sell_prices.csv", "sales_train_validation.csv",
-                  "sales_train_evaluation.csv", "sample_submission.csv"]
+                  "sales_train_evaluation.csv"]
 
 
 def require_columns(frame, columns, name):

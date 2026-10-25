@@ -26,7 +26,6 @@ Download the competition dataset (Kaggle login / rules acceptance may be require
 - `sell_prices.csv`
 - `sales_train_validation.csv`
 - `sales_train_evaluation.csv`
-- `sample_submission.csv`
 
 Do **not** combine the two sales files: their histories overlap. Raw data is not committed to Git.
 

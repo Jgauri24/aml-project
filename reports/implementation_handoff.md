@@ -88,7 +88,6 @@ Raw CSV files and generated datasets are not versioned. Useful source audits, no
 | `sell_prices.csv` | 6,841,121 | 4 |
 | `sales_train_validation.csv` | 30,490 | 1,919 |
 | `sales_train_evaluation.csv` | 30,490 | 1,947 |
-| `sample_submission.csv` | 60,980 | 29 |
 
 Both sales files contain 30,490 item/store pairs; evaluation covers d_1–d_1941, validation d_1–d_1913, calendar d_1–d_1969. There are 3,049 items, 10 stores, 7 departments, 3 categories and 3 states. Weekly prices have 282 distinct Walmart week keys; the file's candidate composite key is unique.
 

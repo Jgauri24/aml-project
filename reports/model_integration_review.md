@@ -25,7 +25,7 @@ No split, metric definition, feature allowlist, model interface or selection rul
 
 - Before edits: **65 / 65 existing tests passed**.
 - After edits: **85 tests passed**, **0 failures**, **0 errors**, **0 skipped**; 4.06 seconds in the baseline environment.
-- Smoke passed: **18 imports, 9 required files, 240 series, four folds, 26,880 × 10 forecasts**, maximum target day **1913**, `final_holdout_evaluated=false`, no result files written.
+- Smoke passed: **18 imports, 8 required files, 240 series, four folds, 26,880 × 10 forecasts**, maximum target day **1913**, `final_holdout_evaluated=false`, no result files written.
 - Original final-holdout mutation/leakage tests remain in the full passing suite. New checks add shuffled output/actual alignment, evaluator quantile scoring, missing/schema/factory/name failures, fresh-origin example fitting, fold-model lifetime, input-panel preservation and smoke missing-file/CLI/non-write behavior.
 - `uv pip check` passes for the unchanged baseline and both temporary optional environments. Baseline installed package inventory (59 distributions), `requirements.txt`, `experiment.yaml` and captured existing data/artifact hashes are unchanged. New Python sources compile and local Markdown links resolve.
 

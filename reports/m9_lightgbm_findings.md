@@ -1,5 +1,12 @@
 # Milestone 9: Gradient Boosting (LightGBM) Forecaster Findings
 
+**Audit, 2026-10-25: partially complete.** The runner executes, but its training
+`horizon` is entirely NaN, trained model files are not saved, and the returned
+tuning metadata is not persisted to the execution JSON. The benchmark numbers
+below differ from the new audit run and should be treated as historical claims,
+not reproduced results. See [milestone verification](milestone_verification.md)
+for current measurements and the unresolved feature-contract failures.
+
 ## 1. Objective and Architecture
 
 Milestone 9 establishes a global tabular machine learning model using **LightGBM** that learns demand patterns across all 240 series simultaneously.

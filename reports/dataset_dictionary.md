@@ -10,17 +10,17 @@ Shape: **1,969 × 14**.
 
 | column(s) | dtype |
 | --- | --- |
-| date | object |
+| date | str |
 | wm_yr_wk | int64 |
-| weekday | object |
+| weekday | str |
 | wday | int64 |
 | month | int64 |
 | year | int64 |
-| d | object |
-| event_name_1 | object |
-| event_type_1 | object |
-| event_name_2 | object |
-| event_type_2 | object |
+| d | str |
+| event_name_1 | str |
+| event_type_1 | str |
+| event_name_2 | str |
+| event_type_2 | str |
 | snap_CA | int64 |
 | snap_TX | int64 |
 | snap_WI | int64 |
@@ -93,23 +93,6 @@ Coverage: `{'first_day': 'd_1', 'last_day': 'd_1941', 'first_date': '2011-01-29'
 Distinct identifiers: `{'item_id': 3049, 'store_id': 10, 'dept_id': 7, 'cat_id': 3, 'state_id': 3, 'item_store_series': 30490}`
 
 Missingness: `{'scope': 'metadata and target d_1–d_1801 only', 'static_missing_cells': 0, 'target_missing_cells': 0}`
-
-## sample_submission.csv
-
-One series/suffix submission row with F1–F28 horizon placeholders. Validation and evaluation suffixes refer to different windows, not different item/store populations.
-
-Shape: **60,980 × 29**.
-
-| column(s) | dtype |
-| --- | --- |
-| id | object |
-| F1 … F28 (all consecutive) | int64 |
-
-Coverage: `{}`
-
-Distinct identifiers: `{'suffix_counts': {'validation': 30490, 'evaluation': 30490}}`
-
-Missingness: `{'scope': 'all non-sales fields', 'by_column': {'id': 0, 'F1': 0, 'F2': 0, 'F3': 0, 'F4': 0, 'F5': 0, 'F6': 0, 'F7': 0, 'F8': 0, 'F9': 0, 'F10': 0, 'F11': 0, 'F12': 0, 'F13': 0, 'F14': 0, 'F15': 0, 'F16': 0, 'F17': 0, 'F18': 0, 'F19': 0, 'F20': 0, 'F21': 0, 'F22': 0, 'F23': 0, 'F24': 0, 'F25': 0, 'F26': 0, 'F27': 0, 'F28': 0}}`
 
 ## Keys and joins
 

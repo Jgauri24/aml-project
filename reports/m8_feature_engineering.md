@@ -1,5 +1,11 @@
 # Milestone 8: Leakage-Safe Feature Engineering
 
+**Audit, 2026-10-25: partially complete.** The feature builder runs, but contract
+checks found target-day price usage in training and incorrect missing-event
+indicators. The original design descriptions below are not evidence that these
+contracts pass. See [milestone verification](milestone_verification.md) and
+`tests/test_milestone_contracts.py` for the outstanding checks.
+
 ## 1. Objective and Overview
 
 Milestone 8 converts historical demand and known future calendar covariates into supervised learning feature matrices for tree-based gradient boosting models (Milestone 9: LightGBM).
