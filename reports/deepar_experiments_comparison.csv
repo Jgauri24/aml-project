@@ -1,0 +1,6 @@
+experiment,context_length,hidden_dim,num_layers,use_static_features,use_calendar_features,distribution,trainable_parameters,best_epoch,best_val_loss,fit_seconds,predict_seconds,mae,rmse,wape,pinball_q10,pinball_q50,pinball_q90
+Exp_A_Basic_DeepAR,56,64,2,True,True,negative_binomial,63582,12,1.1035,20.8,1.65,1.069,2.356,0.9026,0.1189,0.5345,0.4252
+Exp_B_Context_84,84,64,2,True,True,negative_binomial,63582,13,1.1025,18.62,0.97,1.0685,2.3634,0.9022,0.119,0.5343,0.425
+Exp_C_Capacity_Hidden32,56,32,2,True,True,negative_binomial,21406,14,1.1141,16.13,0.78,1.0059,2.4617,0.8493,0.1178,0.5029,0.428
+Exp_D_Sales_Only,56,64,2,False,False,negative_binomial,50562,13,1.1055,17.16,1.13,1.0288,2.429,0.8686,0.1183,0.5144,0.4334
+Exp_D_Sales_Plus_Static,56,64,2,True,False,negative_binomial,61534,12,1.1074,16.2,1.14,1.0527,2.3967,0.8888,0.1179,0.5263,0.4265

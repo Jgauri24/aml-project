@@ -1,0 +1,41 @@
+seed: 42
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  reports: reports
+selection:
+  cutoff_day: 1801
+  trailing_days: 365
+  n_per_group: 80
+  groups: [low, medium, high]
+  minimum_observed_fraction: 1.0
+  # No positive-sales or minimum-volume requirement: sparse/all-zero series remain eligible.
+  balance_columns: [store_id, cat_id]
+observation:
+  start_day: 1
+  end_day: 1941
+forecast:
+  horizon: 28
+  development_origins: [1801, 1829, 1857, 1885]
+  final_origin: 1913
+  final_end_day: 1941
+availability:
+  future_prices: forbidden
+  future_snap: excluded  # Historical SNAP is available; future SNAP is conservatively withheld.
+quality:
+  # A past-only, uncertain proxy: no positive sale yet AND no listed price yet.
+  possible_prelaunch_requires_both: true
+eda:
+  cutoff_day: 1801
+  representative_days: 365
+  rolling_windows: [7, 28]
+  acf_lags: [1, 7, 14, 28]
+  intermittency_adi_threshold: 1.32
+  variability_cv2_threshold: 0.49
+  minimum_price_pairs: 30
+  figure_dpi: 130
+metrics:
+  quantiles: [0.1, 0.5, 0.9]
+  aggregation: pooled
+  zero_wape_denominator: nan

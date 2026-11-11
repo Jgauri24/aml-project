@@ -1,0 +1,18 @@
+.venv/
+.venv-*/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+/data/raw/*
+/data/interim/*
+/data/processed/*
+!/data/raw/.gitkeep
+!/data/interim/.gitkeep
+!/data/processed/.gitkeep
+# Generated analysis tables; readable findings/figures remain versionable.
+/reports/eda_*.csv
+m5-forecasting-accuracy/sales_train_validation.csv
+m5-forecasting-accuracy/sales_train_evaluation.csv
+m5-forecasting-accuracy/sell_prices.csv

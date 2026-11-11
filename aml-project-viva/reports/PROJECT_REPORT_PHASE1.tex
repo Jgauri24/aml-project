@@ -1,0 +1,141 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{Inventory Demand Forecasting via Local Kalman Filtering and Global Gradient Boosted Models: Phase 1 Evaluation\\
+\thanks{Applied Machine Learning (CSAI) Project Phase 1 Evaluation Report.}
+}
+
+\author{\IEEEauthorblockN{Team 5}
+\IEEEauthorblockA{\textit{Department of Computer Science and Artificial Intelligence} \\
+\textit{School of Technology, Rishihood University}\\
+Sonipat, India \\
+Repository: \url{https://github.com/Jgauri24/aml-project}}
+}
+
+\maketitle
+
+\begin{abstract}
+Accurate retail demand forecasting is vital for multi-echelon inventory replenishment, safety-stock allocation, and supply-chain resilience. Retail sales series, however, exhibit severe modeling challenges including high intermittency, zero-inflation, weekly calendar seasonality, and stockout censoring. In this Phase 1 evaluation study, we investigate and benchmark local linear Gaussian state-space estimation (Kalman filtering) against a global tabular gradient-boosted decision tree architecture (LightGBM) using a stratified, deterministic cohort of 240 product series from the M5 Walmart dataset. Across a rigorous four-fold rolling-origin backtest encompassing 26,880 series-day predictions over a 28-day horizon, our findings demonstrate that: (1) Global LightGBM achieves superior point prediction accuracy (0.9227 MAE, 0.7640 WAPE) by pooling cross-series features; (2) Harmonic seasonal Kalman filters achieve the lowest squared error (2.0535 RMSE) by capturing cyclical weekend spikes without overfitting; and (3) Local Kalman filters yield analytically closed-form, well-calibrated 80\% prediction intervals (81.08\% empirical coverage). We also present an interactive Streamlit application deployed for live parameter perturbation and leakage-safe inference.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Demand Forecasting, State-Space Models, Kalman Filter, Maximum Likelihood Estimation, Gradient Boosting, LightGBM, Rolling-Origin Backtesting.
+\end{IEEEkeywords}
+
+\section{Introduction}
+Retail demand planning requires accurate conditional expectation and quantile estimates across divergent product velocities. Traditional methods typically choose between purely local models (fit per SKU) and purely global sequence models. Local models quickly adapt to local state shifts but fail to share structural parameters across sparse product histories. 
+
+This paper establishes the Phase 1 machine learning foundation for Project 5, implementing:
+\begin{enumerate}
+    \item Seasonal naive baselines (Milestone 5).
+    \item Single-SKU local-level Kalman filtering (Milestone 6).
+    \item Multi-SKU Kalman variants with seasonal harmonics and dynamic trends (Milestone 7).
+    \item Leakage-safe tabular feature engineering (Milestone 8).
+    \item Global LightGBM forecaster with rolling chronological validation (Milestone 9).
+    \item An interactive full-stack diagnostic interface (Streamlit UI).
+\end{enumerate}
+
+\section{Problem Formulation \& Dataset}
+Let $y_{i,t} \ge 0$ denote observed sales for series $i \in \{1,\dots,N\}$ on day $t$. Given history up to forecast origin $T$, we predict demand across horizon $h \in \{1,\dots,H\}$ with $H=28$ days.
+
+\subsection{Stratified M5 Cohort}
+We utilize a deterministic cohort of 240 series drawn from the M5 Walmart dataset, stratified across 3 states (CA, TX, WI), 10 stores, 3 categories (\texttt{FOODS}, \texttt{HOUSEHOLD}, \texttt{HOBBIES}), and three volume groups (High, Medium, Low). The dataset exhibits 38.2\% zero-demand entries in low-volume series, pronounced 7-day cyclical seasonality ($r_7 \in [0.08, 0.32]$), and Supplemental Nutrition Assistance Program (SNAP) demand shocks.
+
+\section{State-Space Modeling (Kalman Filter)}
+
+\subsection{Local-Level Formulation (Milestone 6)}
+The local-level state-space model is formulated as:
+\begin{align}
+y_t &= \mu_t + \varepsilon_t, \quad \varepsilon_t \sim \mathcal{N}(0, R) \label{eq:obs}\\
+\mu_t &= \mu_{t-1} + \eta_t, \quad \eta_t \sim \mathcal{N}(0, Q) \label{eq:state}
+\end{align}
+where $\mu_t$ represents the latent demand level, $Q \ge 0$ is the process noise variance governing level drift, and $R > 0$ is the observation noise variance.
+
+\subsection{Innovations Likelihood \& MLE}
+Parameters $\theta = (\ln Q, \ln R)$ are estimated per-series by minimizing the exact prediction-error negative log-likelihood:
+\begin{equation}
+\ell(\theta) = \frac{1}{2}\sum_{t=1}^T \left[ \ln(2\pi S_t) + \frac{v_t^2}{S_t} \right]
+\end{equation}
+where $v_t = y_t - \mu_{t|t-1}$ is the innovation and $S_t = P_{t|t-1} + R$ is the innovation variance. The filter handles missing sales (stockouts) naturally by skipping the measurement update: $\mu_{t|t} = \mu_{t|t-1}$ and $P_{t|t} = P_{t|t-1}$.
+
+\subsection{Multi-Step Predictive Distribution}
+Because the state equation is a random walk, the multi-step conditional point forecast is invariant:
+\begin{equation}
+\hat{y}_{T+h|T} = \mathbb{E}[y_{T+h} \mid \mathcal{F}_T] = \mu_{T|T} \quad \forall h \in \{1,\dots,28\}
+\end{equation}
+Predictive variance widens linearly with forecast horizon $h$:
+\begin{equation}
+V_h = \text{Var}(y_{T+h} \mid \mathcal{F}_T) = P_{T|T} + h \cdot Q + R
+\end{equation}
+Nominal 80\% prediction intervals are obtained via $[\max(0, \mu_{T|T} - 1.282\sqrt{V_h}), \max(0, \mu_{T|T} + 1.282\sqrt{V_h})]$.
+
+\section{Feature Engineering \& Global LightGBM}
+Milestone 8 implements a strictly leakage-safe feature synthesizer extracting 26 features at origin $T$:
+\begin{itemize}
+    \item \textbf{Lags}: $y_{T-1}, y_{T-7}, y_{T-14}, y_{T-28}$.
+    \item \textbf{Rolling Statistics}: 7-day and 28-day means and standard deviations over $t \le T$.
+    \item \textbf{Calendar \& Events}: Day-of-week, month, SNAP indicators, and event flags.
+\end{itemize}
+The LightGBM forecaster (Milestone 9) optimizes the L1 regression loss ($\text{regression\_l1}$), directly estimating conditional median demand and naturally resisting extreme intermittent outliers.
+
+\section{Experimental Protocol}
+Evaluation is executed via a four-fold rolling-origin backtest:
+\begin{itemize}
+    \item \textbf{Fold 1}: Origin $d_{1801}$ (Jan 04 – Jan 31, 2016)
+    \item \textbf{Fold 2}: Origin $d_{1829}$ (Feb 01 – Feb 28, 2016)
+    \item \textbf{Fold 3}: Origin $d_{1857}$ (Feb 29 – Mar 27, 2016)
+    \item \textbf{Fold 4}: Origin $d_{1885}$ (Mar 28 – Apr 24, 2016)
+\end{itemize}
+Total evaluated series-day predictions: 26,880.
+
+\section{Results \& Discussion}
+
+\begin{table}[htbp]
+\caption{Pooled Performance Across 4 Folds (26,880 Observations)}
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{MAE $\downarrow$} & \textbf{RMSE $\downarrow$} & \textbf{WAPE $\downarrow$} & \textbf{Cov. (80\%)} \\
+\midrule
+\textbf{LightGBM (Global)} & \textbf{0.9227} & 2.1081 & \textbf{0.7640} & --- \\
+Kalman LL Seasonal & 1.0007 & \textbf{2.0535} & 0.8286 & 85.72\% \\
+Kalman LT Seasonal & 1.0030 & 2.0576 & 0.8305 & 85.43\% \\
+Kalman Local Level & 1.0106 & 2.0613 & 0.8368 & 85.64\% \\
+\textbf{Kalman Single-SKU (M6)} & 1.0115 & 2.0776 & 0.8375 & \textbf{81.08\%} \\
+Kalman Local Trend & 1.0225 & 2.0976 & 0.8466 & 85.37\% \\
+Naive Weekly Seasonal & 1.1869 & 2.5487 & 0.9828 & --- \\
+Naive Last Value & 1.2479 & 2.5151 & 1.0332 & --- \\
+\bottomrule
+\end{tabular}
+\label{tab:results}
+\end{center}
+\end{table}
+
+\subsection{Comparative Analysis}
+As evidenced in Table~\ref{tab:results}, LightGBM achieves the lowest pooled MAE (0.9227) and WAPE (0.7640), reflecting a 22.3\% error reduction over seasonal naive. Meanwhile, the Kalman local-level seasonal model achieves the lowest RMSE (2.0535), proving the stability of harmonic state tracking against squared volatility. Furthermore, the single-SKU Kalman filter delivers an empirical 80\% coverage of 81.08\%, demonstrating exceptional calibration.
+
+\section{Conclusion \& Phase 2 Roadmap}
+Phase 1 validates the complementary strengths of local state tracking and global gradient boosting. In Phase 2, we will integrate these modalities into a deep probabilistic hybrid architecture (DeepAR / TFT) where Kalman state estimates and innovation residuals act as dynamic structural inputs.
+
+\begin{thebibliography}{00}
+\bibitem{b1} R. E. Kalman, ``A new approach to linear filtering and prediction problems,'' \textit{Journal of Basic Engineering}, vol. 82, no. 1, pp. 35--45, 1960.
+\bibitem{b2} D. Salinas, V. Flunkert, J. Gasthaus, and T. Januschowski, ``DeepAR: Probabilistic forecasting with autoregressive recurrent networks,'' \textit{International Journal of Forecasting}, vol. 36, no. 3, pp. 1181--1191, 2020.
+\bibitem{b3} A. C. Harvey, \textit{Forecasting, structural time series models and the Kalman filter}. Cambridge University Press, 1990.
+\bibitem{b4} G. Ke et al., ``LightGBM: A highly efficient gradient boosting decision tree,'' \textit{Advances in Neural Information Processing Systems (NeurIPS)}, vol. 30, 2017.
+\bibitem{b5} M. Makridakis, E. Spiliotis, and V. Assimakopoulos, ``The M5 accuracy competition: Results, findings, and conclusions,'' \textit{International Journal of Forecasting}, vol. 38, no. 4, pp. 1346--1364, 2022.
+\end{thebibliography}
+
+\end{document}

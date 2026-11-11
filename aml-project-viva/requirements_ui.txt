@@ -1,0 +1,4 @@
+# UI dependencies (Streamlit demo app)
+# Install with: pip install -r requirements_ui.txt
+-r requirements.txt
+streamlit>=1.35

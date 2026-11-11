@@ -267,3 +267,36 @@ prediction = model.predict(inputs)  # inputs for origin 1801
 All four saved bundles reproduce their original forecasts. Quantiles remain
 unavailable for this point model. The baseline suite skips optional LightGBM
 checks when that package is absent; the dedicated environment runs all 231 tests.
+
+## M10 DeepAR status
+
+M10 implements the **DeepAR Global Probabilistic Forecasting Model** using a native PyTorch recurrent architecture. Unlike local independent models, DeepAR trains a single shared multi-layer LSTM jointly across all 240 SKU-store series.
+
+Key architectural properties:
+- **Discrete Count Likelihood**: Parameterized with a Negative Binomial distribution head producing mean $\mu > 0$ and dispersion $\alpha > 0$. Ensures non-negative integer sample paths and captures empirical demand overdispersion.
+- **Categorical Embeddings & Known Covariates**: Ingests static categorical embeddings (`item_id`, `store_id`, `dept_id`, `cat_id`, `state_id`) with safe `<unk>` fallback, alongside known calendar covariates (wday/month cyclics, weekend indicator, events).
+- **Autoregressive Multi-Step Rollout**: Simulates 200 Monte Carlo trajectories per series, deriving finite, ordered quantiles $0 \le q10 \le q50 \le q90$ where $y\_pred = q50$.
+- **BaseForecaster Compliance**: Full integration into the shared backtesting engine with strict chronological origin isolation and zero future target leakage.
+
+Run the DeepAR pipeline, experiments, and tests:
+
+```bash
+# Run full development backtest (4 folds x 240 series = 26,880 predictions)
+python -m scripts.run_deepar --output-dir deepar
+
+# Run experiments A, B, C, D (context length, model capacity, covariate contributions)
+python -m scripts.run_deepar_experiments
+
+# Generate all 8 diagnostic figures
+python -m scripts.plot_deepar_diagnostics
+
+# Run DeepAR unit and integration tests
+python -m pytest tests/test_deepar.py -v
+```
+
+Outputs:
+- `data/processed/deepar/`: Shared `predictions.parquet`, `scored_predictions.parquet`, `metrics.csv`, `execution_metadata.json`, and checkpoints.
+- `reports/deepar_experiments_comparison.csv` and [M10 findings](reports/m10_deepar_findings.md).
+- [DeepAR technical specification](docs/DEEPAR.md) detailing architecture, likelihood formulas, and teammate integration instructions.
+- `reports/figures/deepar_*.png`: 8 diagnostic and comparison figures.
+
