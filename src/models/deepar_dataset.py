@@ -21,6 +21,38 @@ from src.models.deepar_config import DeepARConfig
 logger = logging.getLogger(__name__)
 
 
+def handle_missing_targets(
+    y: np.ndarray,
+    policy: str = "zero",
+) -> np.ndarray:
+    """Handle missing observations (NaN / inf) in target series according to specified policy.
+
+    Policies:
+    - "zero": Unobserved sales set to 0.0 (canonical assumption for retail intermittent demand).
+    - "forward_fill": Forward-fill last observed value, with remaining leading NaNs filled with 0.0.
+    - "mean": Fill with the mean of observed non-missing values (or 0.0 if all missing).
+    """
+    y_clean = np.asarray(y, dtype=np.float32).copy()
+    mask_missing = ~np.isfinite(y_clean)
+    if not mask_missing.any():
+        return y_clean
+
+    if policy == "zero":
+        y_clean[mask_missing] = 0.0
+    elif policy == "forward_fill":
+        s = pd.Series(y_clean)
+        s = s.ffill().fillna(0.0)
+        y_clean = s.to_numpy(dtype=np.float32)
+    elif policy == "mean":
+        observed = y_clean[~mask_missing]
+        mean_val = float(np.mean(observed)) if len(observed) > 0 else 0.0
+        y_clean[mask_missing] = mean_val
+    else:
+        raise ValueError(f"Unknown missing target policy: {policy}")
+
+    return y_clean
+
+
 def validate_deepar_inputs(inputs: ForecastInputs) -> None:
     """Validate data integrity for DeepAR training and inference."""
     if inputs.history is None or inputs.history.empty:
@@ -41,7 +73,7 @@ def validate_deepar_inputs(inputs: ForecastInputs) -> None:
     sales = inputs.history["units_sold"].dropna()
     if (sales < 0).any():
         raise ValueError("Historical units_sold contains negative values")
-    if not np.isfinite(sales.to_numpy(dtype=float)).all():
+    if np.isinf(sales.to_numpy(dtype=float)).any():
         raise ValueError("Historical units_sold contains non-finite values (inf / -inf)")
 
     # Check series alignment
@@ -72,7 +104,8 @@ class StaticCategoryEncoder:
         for col in self.cat_columns:
             if col not in static_df.columns:
                 raise ValueError(f"Required static categorical column '{col}' missing from static dataframe")
-            unique_vals = sorted(static_df[col].astype(str).unique())
+            valid_vals = static_df[col].dropna().astype(str).unique()
+            unique_vals = sorted(v for v in valid_vals if v not in ["nan", "None", "<unk>"])
             # index 0 is reserved for unknown categories (<unk>)
             mapping = {val: idx + 1 for idx, val in enumerate(unique_vals)}
             self.mappings_[col] = mapping
@@ -84,7 +117,9 @@ class StaticCategoryEncoder:
         result = {}
         for col in self.cat_columns:
             mapping = self.mappings_[col]
-            encoded = static_df[col].astype(str).map(lambda x: mapping.get(x, 0)).to_numpy(dtype=np.int64)
+            encoded = static_df[col].apply(
+                lambda x: mapping.get(str(x), 0) if pd.notna(x) and str(x) not in ["nan", "None"] else 0
+            ).to_numpy(dtype=np.int64)
             result[col] = encoded
         return result
 
@@ -149,6 +184,7 @@ def extract_dynamic_covariates(df: pd.DataFrame) -> np.ndarray:
 
     # Stack along axis 1: shape (N, num_features)
     cov_matrix = np.column_stack(features).astype(np.float32)
+    cov_matrix = np.nan_to_num(cov_matrix, nan=0.0, posinf=0.0, neginf=0.0)
     return cov_matrix
 
 
@@ -300,16 +336,25 @@ def prepare_deepar_data(inputs: ForecastInputs, config: DeepARConfig) -> DeepARP
 
     # For chronological validation: hold out the final val_window_length days
     val_len = config.val_window_length
+    policy = getattr(config, "missing_target_policy", "zero")
+    missing_count = 0
+    total_obs = 0
 
     for s_idx, sid in enumerate(series_ids):
         grp = hist_grouped[sid]
-        y = grp["units_sold"].to_numpy(dtype=np.float32)
+        raw_y = grp["units_sold"].to_numpy(dtype=np.float32)
+        total_obs += len(raw_y)
+        missing_count += int((~np.isfinite(raw_y)).sum())
+
+        # Clean missing observations according to configured policy
+        y = handle_missing_targets(raw_y, policy=policy)
 
         # Scale factor nu_i = 1.0 + (1 / T) * sum(y_t)
-        # Computed strictly on training portion to prevent any leakage
-        y_train_split = y[:-val_len] if len(y) > val_len + config.context_length else y
-        mean_val = float(np.mean(y_train_split)) if len(y_train_split) > 0 else 0.0
-        scale = 1.0 + mean_val if config.scaling else 1.0
+        # Computed strictly on training portion ignoring NaNs to prevent any leakage
+        raw_y_train = raw_y[:-val_len] if len(raw_y) > val_len + config.context_length else raw_y
+        valid_train = raw_y_train[np.isfinite(raw_y_train)]
+        mean_val = float(np.mean(valid_train)) if len(valid_train) > 0 else 0.0
+        scale = 1.0 + max(0.0, mean_val) if config.scaling else 1.0
         scales.append(scale)
 
         if config.use_calendar_features:
@@ -324,6 +369,12 @@ def prepare_deepar_data(inputs: ForecastInputs, config: DeepARConfig) -> DeepARP
         # Validation history: full history up to origin
         targets_val.append(y)
         covariates_val.append(cov)
+
+    if missing_count > 0:
+        logger.info(
+            f"Handled {missing_count} missing/non-finite observations ({100.0 * missing_count / total_obs:.2f}%) "
+            f"using policy '{policy}'"
+        )
 
     scales_arr = np.array(scales, dtype=np.float32)
 
@@ -363,7 +414,8 @@ def prepare_deepar_data(inputs: ForecastInputs, config: DeepARConfig) -> DeepARP
 
     for s_idx, sid in enumerate(series_ids):
         grp_hist = hist_grouped[sid]
-        y_hist = grp_hist["units_sold"].to_numpy(dtype=np.float32)
+        raw_y_hist = grp_hist["units_sold"].to_numpy(dtype=np.float32)
+        y_hist = handle_missing_targets(raw_y_hist, policy=policy)
         # Context window: last context_length days up to origin
         if len(y_hist) < config.context_length:
             pad_len = config.context_length - len(y_hist)

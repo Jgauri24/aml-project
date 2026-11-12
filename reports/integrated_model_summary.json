@@ -1,0 +1,107 @@
+{
+  "title": "Phase 1 Multi-Model Pipeline Integration",
+  "split_validation": {
+    "status": "VALID",
+    "num_folds": 4,
+    "origins": [
+      1801,
+      1829,
+      1857,
+      1885
+    ],
+    "horizon": 28,
+    "final_origin": 1913,
+    "holdout_origin": 1913,
+    "holdout_target_days": [
+      1914,
+      1941
+    ],
+    "target_day_ranges": [
+      [
+        1802,
+        1829
+      ],
+      [
+        1830,
+        1857
+      ],
+      [
+        1858,
+        1885
+      ],
+      [
+        1886,
+        1913
+      ]
+    ],
+    "panel_min_day": 1,
+    "panel_max_day": 1913,
+    "panel_series_count": 240
+  },
+  "consistency_report": {
+    "status": "ALL_MODELS_CONSISTENT",
+    "expected_origins": [
+      1801,
+      1829,
+      1857,
+      1885
+    ],
+    "expected_horizon": 28,
+    "expected_rows": 26880,
+    "models_verified": [
+      "lightgbm",
+      "naive_last_value",
+      "naive_weekly_seasonal"
+    ],
+    "model_details": {
+      "lightgbm": {
+        "rows": 26880,
+        "series": 240,
+        "origins": [
+          1801,
+          1829,
+          1857,
+          1885
+        ],
+        "max_target_day": 1913,
+        "has_quantiles": false,
+        "status": "CONSISTENT"
+      },
+      "naive_last_value": {
+        "rows": 26880,
+        "series": 240,
+        "origins": [
+          1801,
+          1829,
+          1857,
+          1885
+        ],
+        "max_target_day": 1913,
+        "has_quantiles": false,
+        "status": "CONSISTENT"
+      },
+      "naive_weekly_seasonal": {
+        "rows": 26880,
+        "series": 240,
+        "origins": [
+          1801,
+          1829,
+          1857,
+          1885
+        ],
+        "max_target_day": 1913,
+        "has_quantiles": false,
+        "status": "CONSISTENT"
+      }
+    }
+  },
+  "models_count": 13,
+  "best_point_accuracy_model": "lightgbm",
+  "best_point_accuracy_wape": 0.7639960314666749,
+  "generated_artifacts": [
+    "reports/integrated_model_comparison.csv",
+    "reports/integrated_model_summary.md",
+    "reports/integrated_model_by_origin.csv",
+    "reports/integrated_model_by_volume.csv"
+  ]
+}

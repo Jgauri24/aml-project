@@ -39,6 +39,7 @@ class DeepARConfig:
     # Distribution & scaling
     distribution: str = "negative_binomial"  # "negative_binomial" or "gaussian"
     scaling: bool = True                     # Mean scaling nu = 1 + (1/T) sum y_t
+    missing_target_policy: str = "zero"      # "zero", "forward_fill", or "mean"
 
     # Optimization
     lr: float = 1e-3
@@ -101,6 +102,8 @@ class DeepARConfig:
             raise ValueError(f"num_samples must be positive, got {self.num_samples}")
         if self.distribution not in ("negative_binomial", "gaussian"):
             raise ValueError(f"Unsupported distribution '{self.distribution}'")
+        if self.missing_target_policy not in ("zero", "forward_fill", "mean"):
+            raise ValueError(f"Unsupported missing_target_policy '{self.missing_target_policy}'")
         if self.quantiles != sorted(self.quantiles):
             raise ValueError("Quantiles must be sorted in ascending order")
 
