@@ -1,0 +1,53 @@
+# Frozen before holdout evaluation. Changes require a new experiment, not retuning.
+version: 1
+seed: 42
+selection_metric: development_pooled_wape
+primary_model: lightgbm
+selection_evidence:
+  lightgbm: reports/m9_lightgbm_findings.md
+  kalman: reports/m7_kalman_findings.md
+  deepar: reports/deepar_experiments_comparison.csv
+  deepar_scope: single_origin_1801_ablation_not_four_fold_comparison
+models:
+  seasonal_naive:
+    variant: weekly_seasonal
+  kalman:
+    variant: local_level_seasonal
+    fit_window: 364
+    damping: 0.98
+    n_jobs: 1
+    seed: 42
+  lightgbm:
+    objective: regression_l1
+    metric: mae
+    num_leaves: 31
+    learning_rate: 0.05
+    feature_fraction: 0.8
+    bagging_fraction: 0.8
+    bagging_freq: 1
+    min_child_samples: 20
+    n_estimators: 500
+    verbose: -1
+    n_jobs: 1
+    random_state: 42
+  deepar:
+    context_length: 56
+    prediction_length: 28
+    hidden_dim: 32
+    num_layers: 2
+    dropout: 0.1
+    epochs: 20
+    early_stopping_patience: 8
+    batch_size: 32
+    lr: 0.001
+    weight_decay: 0.00001
+    distribution: negative_binomial
+    scaling: true
+    missing_target_policy: zero
+    use_static_features: true
+    use_calendar_features: true
+    val_window_length: 28
+    windows_per_series_train: 8
+    num_samples: 200
+    device: cpu
+    seed: 42
