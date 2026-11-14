@@ -1,0 +1,4 @@
+analysis,available,source_file,reason
+Kalman fit/prediction time,True,kalman_variant_comparison.csv,Pooled over recorded series fits
+DeepAR fit/prediction time and parameter count,True,deepar_experiments_comparison.csv,Configuration experiments
+Comparable all-family runtime/inference per SKU,False,,No common timing protocol or per-SKU LightGBM/baseline timings

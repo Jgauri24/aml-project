@@ -1,0 +1,2 @@
+analysis,available,source_file,reason
+Horizon analysis,True,kalman_variant_by_horizon.csv,Reported only for Kalman variants

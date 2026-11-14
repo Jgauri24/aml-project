@@ -1,0 +1,69 @@
+# Reproducible end-to-end development evaluation. The final holdout is reserved
+# by experiment.yaml and is never evaluated or used for model selection here.
+base_config: ../experiment.yaml
+
+dataset:
+  panel_path: ../data/processed/demand_panel.parquet
+  panel_metadata_path: ../data/processed/panel_metadata.json
+  expected_panel_metadata: true
+
+evaluation:
+  experiment_id: null  # null generates a UTC timestamp + configuration hash.
+  forecast_horizon: null  # null inherits experiment.yaml (28 days).
+  development_origins: null  # null inherits validated chronological origins.
+  generate_origins: false  # true clears explicit origins and uses origin_start + step_size.
+  origin_start: null
+  window_mode: null  # expanding | sliding | null inherits.
+  training_window_days: null
+  step_size: null
+  sku_ids: null  # item_id allowlist; null uses the prepared cohort.
+  store_ids: null  # store_id allowlist.
+  series_ids: null  # optional series_id allowlist for SKU-store pairs.
+  random_seed: 42
+  metrics: [mae, rmse, wape, smape, mase, pinball_q10, pinball_q50, pinball_q90,
+            coverage_80, mean_interval_width_80, wis_80]
+  demand_segments:
+    method: first_origin_training_mean_tertiles
+  final_holdout:
+    evaluate: false
+    tuning: false
+
+models:
+  seasonal_naive:
+    enabled: true
+    variant: weekly_seasonal
+  kalman:
+    enabled: true
+    variant: local_level_seasonal
+    fit_window: 364
+    n_jobs: 1
+  lightgbm:
+    enabled: true
+    params:
+      n_jobs: 1
+  deepar:
+    enabled: true
+    # prediction_length and seed are synchronized with evaluation settings.
+    config:
+      context_length: 56
+      prediction_length: 28
+      hidden_dim: 64
+      num_layers: 2
+      epochs: 35
+      batch_size: 32
+      early_stopping_patience: 8
+      num_samples: 200
+      device: auto
+
+statistics:
+  bootstrap_iterations: 2000
+  confidence: 0.95
+  dm_min_origins: 8
+  seed: 42
+
+outputs:
+  root: ../reports/evaluation_runs
+  save_csv: true
+  save_parquet: true
+  dashboard_directory: dashboard
+  visualization_directory: visualizations

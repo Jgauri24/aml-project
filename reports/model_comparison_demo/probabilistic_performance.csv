@@ -1,0 +1,17 @@
+scope,model,metric,value,rank
+overall_accuracy,deepar,pinball_q10,0.19035714289971764,2.0
+overall_accuracy,kalman_local_level,pinball_q10,0.08591912429367668,1.0
+overall_accuracy,lightgbm,pinball_q10,,
+overall_accuracy,naive_weekly_seasonal,pinball_q10,,
+overall_accuracy,deepar,pinball_q50,0.6651785714285714,2.0
+overall_accuracy,kalman_local_level,pinball_q50,0.28849847115934996,1.0
+overall_accuracy,lightgbm,pinball_q50,,
+overall_accuracy,naive_weekly_seasonal,pinball_q50,,
+overall_accuracy,deepar,pinball_q90,0.26696428614003315,2.0
+overall_accuracy,kalman_local_level,pinball_q90,0.14481429696905698,1.0
+overall_accuracy,lightgbm,pinball_q90,,
+overall_accuracy,naive_weekly_seasonal,pinball_q90,,
+overall_accuracy,deepar,wis_80,0.7483333336455482,2.0
+overall_accuracy,kalman_local_level,wis_80,0.34615459494805584,1.0
+overall_accuracy,lightgbm,wis_80,,
+overall_accuracy,naive_weekly_seasonal,wis_80,,

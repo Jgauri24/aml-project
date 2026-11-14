@@ -68,6 +68,8 @@ For IDE notebook execution, select `.venv/bin/python` as the kernel. The noteboo
 
 See [the model integration contract](docs/MODEL_INTEGRATION.md) for `BaseForecaster`, model factories, origin-safe inputs, prediction validation and isolated outputs. [Teammate setup](docs/TEAMMATE_SETUP.md) gives clone/data/artifact/reproduction steps. [Dependency compatibility](docs/DEPENDENCIES.md) records verified LightGBM/PyTorch/GluonTS setups; GluonTS needs a separate pandas-2 environment, and LightGBM on this Mac requires OpenMP. Baseline dependencies and experiment settings remain unchanged.
 
+For the complete rolling backtesting and statistical evaluation subsystem, see the [technical evaluation guide](docs/ROLLING_BACKTESTING_STATISTICAL_EVALUATION.md). It documents the end-to-end pipeline, dashboard schemas, statistical assumptions, test commands, and Member 4/Member 5/research handoff.
+
 Run one read-only readiness command from the repository root:
 
 ```bash

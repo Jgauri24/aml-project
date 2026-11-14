@@ -1,0 +1,9 @@
+analysis,available,source_file,reason
+MAE / RMSE / WAPE model comparison,True,integrated_model_comparison.csv,Pooled retail evaluation results
+sMAPE / MASE model comparison,False,integrated_model_comparison.csv,Not recorded; raw scored forecasts/training scales absent
+Horizon buckets 1–7 through 22–28,True,kalman_variant_by_horizon.csv,Available for Kalman variants only
+SKU error distributions / best and worst SKUs / naive comparison,False,,No per-series scored predictions
+Store-level model performance,False,,No store identifier in aggregate performance tables
+Date-level actual vs predicted median and P10–P90,False,,No row-level actuals and prediction quantiles
+Aggregate probability coverage and width,True,integrated_model_comparison.csv,Reported aggregate interval summaries
+Runtime/model size,True,kalman_variant_comparison.csv; deepar_experiments_comparison.csv,Partial; not a standardized cross-family benchmark

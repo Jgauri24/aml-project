@@ -1,0 +1,3 @@
+model,series_id,item_id,store_id,scope,n_rows,n_observed,mae,rmse,wape,smape,mase,n_mase,pinball_q10,pinball_q50,pinball_q90,coverage_80,mean_interval_width_80,wis_80
+lightgbm,FOODS_1_004__TX_2,FOODS_1_004,TX_2,sku_store,28,28,0.34101084254509306,0.38083793561617996,,171.42857142857142,0.07869480981809841,28,,,,,,
+lightgbm,FOODS_1_019__WI_1,FOODS_1_019,WI_1,sku_store,28,28,3.3886941354105105,4.522280004391818,0.6283671244469821,74.11065338538265,1.1468674691477632,28,,,,,,

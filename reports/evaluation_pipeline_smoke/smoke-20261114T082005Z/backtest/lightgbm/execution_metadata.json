@@ -1,0 +1,41 @@
+{
+  "model": "lightgbm",
+  "purpose": "development evaluation",
+  "generated_at_utc": "2026-11-14T08:20:06.843245+00:00",
+  "python": "3.13.12",
+  "pandas": "3.0.2",
+  "seed": 42,
+  "config_sha256": "2dc8a7d59af384d9bfc1f9de10b4d413940b2b26316853273a7189a1f57b1295",
+  "prediction_rows": 56,
+  "folds": [
+    {
+      "model": "lightgbm",
+      "origin": 140,
+      "train_rows": 280,
+      "forecast_rows": 56,
+      "n_series": 2,
+      "fit_seconds": 0.03363645798526704,
+      "predict_seconds": 0.007479582913219929,
+      "total_seconds": 0.04111604089848697,
+      "prediction_seconds_per_series": 0.0037397914566099644,
+      "tree_count": 8,
+      "serialized_model_bytes": 9443
+    }
+  ],
+  "window_mode": "expanding",
+  "training_window_days": null,
+  "step_size": 28,
+  "sku_filter": null,
+  "store_filter": null,
+  "series_count": 2,
+  "origin_dates": {
+    "140": "2024-05-19"
+  },
+  "max_target_day": 168,
+  "final_holdout_evaluated": false,
+  "aggregation": "pooled over nonmissing actuals; WAPE ratio (not percent); no quantiles -> NaN pinball",
+  "availability": {
+    "future_prices": "forbidden",
+    "future_snap": "excluded"
+  }
+}

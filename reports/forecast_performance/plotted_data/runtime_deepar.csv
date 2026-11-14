@@ -1,0 +1,6 @@
+model,fit_seconds,predict_seconds,model_parameters,total_recorded_seconds,source_family
+Exp_A_Basic_DeepAR,20.8,1.65,63582,22.45,DeepAR experiment
+Exp_B_Context_84,18.62,0.97,63582,19.59,DeepAR experiment
+Exp_C_Capacity_Hidden32,16.13,0.78,21406,16.91,DeepAR experiment
+Exp_D_Sales_Only,17.16,1.13,50562,18.29,DeepAR experiment
+Exp_D_Sales_Plus_Static,16.2,1.14,61534,17.34,DeepAR experiment

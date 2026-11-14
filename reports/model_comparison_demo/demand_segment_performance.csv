@@ -1,0 +1,17 @@
+scope,demand_segment,model,metric,value,rank
+demand_segment,high,deepar,mae,1.7678571428571428,4.0
+demand_segment,high,kalman_local_level,mae,0.619515050540793,3.0
+demand_segment,high,lightgbm,mae,0.18448594714285704,2.0
+demand_segment,high,naive_weekly_seasonal,mae,0.0,1.0
+demand_segment,low,deepar,mae,0.8928571428571429,4.0
+demand_segment,low,kalman_local_level,mae,0.5344788340966069,3.0
+demand_segment,low,lightgbm,mae,0.4037382892857143,1.0
+demand_segment,low,naive_weekly_seasonal,mae,0.4642857142857143,2.0
+demand_segment,high,deepar,wape,0.7279411764705882,4.0
+demand_segment,high,kalman_local_level,wape,0.2550944325756207,3.0
+demand_segment,high,lightgbm,wape,0.07596480176470584,2.0
+demand_segment,high,naive_weekly_seasonal,wape,0.0,1.0
+demand_segment,low,deepar,wape,0.6097560975609756,4.0
+demand_segment,low,kalman_local_level,wape,0.3650099354806096,3.0
+demand_segment,low,lightgbm,wape,0.2757237097560976,1.0
+demand_segment,low,naive_weekly_seasonal,wape,0.3170731707317073,2.0

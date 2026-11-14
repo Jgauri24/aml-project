@@ -1,0 +1,5 @@
+model,n_intervals,coverage_80,mean_interval_width_80
+deepar,56,0.7678571428571429,2.5374999876533235
+kalman_local_level_seasonal,56,0.9107142857142857,0.8267682979884166
+lightgbm,0,,
+naive_weekly_seasonal,0,,

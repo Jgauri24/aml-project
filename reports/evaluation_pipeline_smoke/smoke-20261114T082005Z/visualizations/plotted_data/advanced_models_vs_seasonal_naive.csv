@@ -1,0 +1,7 @@
+model,series_id,mae,baseline_mae,advanced_fails_to_beat_baseline
+deepar,ITEM_001__CA_1,1.7678571428571428,0.0,True
+deepar,ITEM_002__TX_1,0.8928571428571429,0.4642857142857143,True
+kalman_local_level_seasonal,ITEM_001__CA_1,3.1720657846433045e-16,0.0,True
+kalman_local_level_seasonal,ITEM_002__TX_1,0.32011029789695017,0.4642857142857143,False
+lightgbm,ITEM_001__CA_1,0.18448594714285704,0.0,True
+lightgbm,ITEM_002__TX_1,0.4037382892857143,0.4642857142857143,False

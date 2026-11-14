@@ -1,0 +1,360 @@
+{
+  "experiment_id": "lightgbm-real-singlethread-20261114",
+  "created_at_utc": "2026-11-14T09:55:21.266804+00:00",
+  "pipeline_config_path": "/Users/sanchitgarg/Desktop/aml-project/configs/evaluation_pipeline.yaml",
+  "pipeline_config_sha256": "1257a20b41b5656cafaa15457674349979c3df4a898a50a49a9ed33caf6d1ce1",
+  "base_experiment_config_sha256": "3165902b6103db83df9b16c7305b943c74b4d96468b2c264a55bf07eb581e098",
+  "resolved_backtest_config": {
+    "seed": 42,
+    "paths": {
+      "raw": "data/raw",
+      "interim": "data/interim",
+      "processed": "data/processed",
+      "reports": "reports"
+    },
+    "selection": {
+      "cutoff_day": 1801,
+      "trailing_days": 365,
+      "n_per_group": 80,
+      "groups": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "minimum_observed_fraction": 1.0,
+      "balance_columns": [
+        "store_id",
+        "cat_id"
+      ]
+    },
+    "observation": {
+      "start_day": 1,
+      "end_day": 1941
+    },
+    "forecast": {
+      "horizon": 28,
+      "development_origins": [
+        1885
+      ],
+      "final_origin": 1913,
+      "final_end_day": 1941
+    },
+    "backtest": {
+      "window_mode": "expanding",
+      "training_window_days": null,
+      "step_size": 28,
+      "origin_start": null,
+      "sku_ids": null,
+      "store_ids": null
+    },
+    "availability": {
+      "future_prices": "forbidden",
+      "future_snap": "excluded"
+    },
+    "quality": {
+      "possible_prelaunch_requires_both": true
+    },
+    "eda": {
+      "cutoff_day": 1801,
+      "representative_days": 365,
+      "rolling_windows": [
+        7,
+        28
+      ],
+      "acf_lags": [
+        1,
+        7,
+        14,
+        28
+      ],
+      "intermittency_adi_threshold": 1.32,
+      "variability_cv2_threshold": 0.49,
+      "minimum_price_pairs": 30,
+      "figure_dpi": 130
+    },
+    "metrics": {
+      "quantiles": [
+        0.1,
+        0.5,
+        0.9
+      ],
+      "aggregation": "pooled",
+      "zero_wape_denominator": "nan"
+    }
+  },
+  "dataset": {
+    "source": "/Users/sanchitgarg/Desktop/aml-project/data/processed/demand_panel.parquet",
+    "metadata_path": "/Users/sanchitgarg/Desktop/aml-project/data/processed/panel_metadata.json",
+    "validation": "load_panel verified config and selection hashes",
+    "dataset_sha256": "eb15eb3592ad933ed159c539b3813c3bef2ebe90f67a84ae303eb1f7841a5c16",
+    "panel_metadata": {
+      "generated_at_utc": "2026-11-14T09:23:07.649460+00:00",
+      "python": "3.13.12",
+      "pandas": "3.0.2",
+      "config_sha256": "3165902b6103db83df9b16c7305b943c74b4d96468b2c264a55bf07eb581e098",
+      "source_sha256": {
+        "calendar.csv": "d12b5914ef03e66649adf5dd9e996e6602251c22b7a6af8f1f7e3aa12f8860f5",
+        "sales_train_evaluation.csv": "4b4a47c44c38380d2a9168216fea8c9ff2f31b1ddb772f8a0995952a038b8aa0",
+        "sales_train_validation.csv": "f368e66ed1dbecb48b2cc8fc589bf68b3deddbbb36bf5c88b4d6d0a09b9b6724",
+        "sample_submission.csv": "eb7597afbec367475ef25dc6dbbc009b8faa47fa2107252c72a029e3cdf72343",
+        "sell_prices.csv": "9da3ad1f8b8ccacdbdc70612191dd375ec24a4ac6625c24b75b3bc60b0bed2ef"
+      },
+      "selection_cutoff": 1801,
+      "selection_csv_sha256": "ae420f767d5185b359fe0327c740147f37d4f78712d971330e936d584d41d4ab",
+      "source_sales": "sales_train_evaluation.csv only; no concatenation with validation",
+      "target": "Observed unit sales, not latent demand; zeros preserved; missing targets never filled",
+      "quality_flags": "Past-only at each row timestamp; availability always unknown; no stockout labels",
+      "validation": {
+        "rows": 465840,
+        "series": 240,
+        "days_per_series": 1941,
+        "day_start": 1,
+        "day_end": 1941,
+        "date_start": "2011-01-29",
+        "date_end": "2016-05-22",
+        "duplicate_series_days": 0,
+        "missing_indexed_rows": 0,
+        "missing_targets": 0,
+        "checks": "unique keys, continuity, day/date mapping, static metadata, target/price domain, zero/missing flags",
+        "holdout_policy": "Only mechanical integrity/missingness checks on holdout; no target distribution or performance analysis."
+      },
+      "dtypes": {
+        "series_id": "category",
+        "item_id": "category",
+        "store_id": "category",
+        "dept_id": "category",
+        "cat_id": "category",
+        "state_id": "category",
+        "d": "category",
+        "units_sold": "float32",
+        "day_num": "int16",
+        "date": "datetime64[us]",
+        "wm_yr_wk": "int32",
+        "weekday": "category",
+        "wday": "uint8",
+        "month": "uint8",
+        "year": "int16",
+        "event_name_1": "category",
+        "event_type_1": "category",
+        "event_name_2": "category",
+        "event_type_2": "category",
+        "snap_CA": "uint8",
+        "snap_TX": "uint8",
+        "snap_WI": "uint8",
+        "sell_price": "float32",
+        "snap": "uint8",
+        "is_zero_sale": "boolean",
+        "price_missing": "bool",
+        "possible_prelaunch": "bool",
+        "availability_unknown": "bool"
+      },
+      "memory_bytes": 23331019,
+      "selection": {
+        "seed": 42,
+        "cutoff_day": 1801,
+        "config_sha256": "3165902b6103db83df9b16c7305b943c74b4d96468b2c264a55bf07eb581e098",
+        "total_candidates": 30490,
+        "eligible": 30490,
+        "excluded": 0,
+        "eligibility": "Configured minimum observed fraction through cutoff; no positive-volume filter.",
+        "ranking": "Trailing 365-day mean ascending; series_id breaks ties; equal rank terciles.",
+        "sampling": "Seeded random within store/category strata; round-robin strata per volume tercile.",
+        "compromises": [
+          "Equal group sizes and diversity deliberately change population proportions; no population representativeness claimed."
+        ],
+        "groups": {
+          "low": {
+            "candidates": 10164,
+            "selected": 80,
+            "pool_min_mean": 0.0,
+            "pool_max_mean": 0.3205479383468628,
+            "stores": 10,
+            "categories": 3
+          },
+          "medium": {
+            "candidates": 10163,
+            "selected": 80,
+            "pool_min_mean": 0.3205479383468628,
+            "pool_max_mean": 0.915068507194519,
+            "stores": 10,
+            "categories": 3
+          },
+          "high": {
+            "candidates": 10163,
+            "selected": 80,
+            "pool_min_mean": 0.915068507194519,
+            "pool_max_mean": 92.65753173828125,
+            "stores": 10,
+            "categories": 3
+          }
+        }
+      }
+    }
+  },
+  "selected_series_count": 2,
+  "forecast_origins": [
+    1885
+  ],
+  "forecast_horizon": 28,
+  "training_window": {
+    "mode": "expanding",
+    "days": null
+  },
+  "models": {
+    "lightgbm": {
+      "enabled": true,
+      "params": {
+        "n_jobs": 1,
+        "verbosity": -1,
+        "random_state": 42
+      },
+      "random_state": 42
+    }
+  },
+  "model_names": [
+    "lightgbm"
+  ],
+  "metrics_requested": [
+    "mae",
+    "rmse",
+    "wape",
+    "smape",
+    "mase",
+    "pinball_q10",
+    "pinball_q50",
+    "pinball_q90",
+    "coverage_80",
+    "mean_interval_width_80",
+    "wis_80"
+  ],
+  "metric_summary": [
+    {
+      "model": "lightgbm",
+      "scope": "portfolio",
+      "n_rows": 56,
+      "n_observed": 56,
+      "mae": 1.864852488977802,
+      "rmse": 3.20905390818902,
+      "wape": 0.6916009230646153,
+      "smape": 122.76961240697703,
+      "mase": 0.6127811394829309,
+      "n_mase": 56,
+      "pinball_q10": null,
+      "pinball_q50": null,
+      "pinball_q90": null,
+      "coverage_80": null,
+      "mean_interval_width_80": null,
+      "wis_80": null
+    }
+  ],
+  "runtime_summary": [
+    {
+      "model": "lightgbm",
+      "origin": 1885,
+      "scope": "fold",
+      "training_time_seconds": 0.31268495903350413,
+      "prediction_time_seconds": 0.00985241704620421,
+      "inference_seconds_per_sku_store": 0.004926208523102105,
+      "total_runtime_seconds": 0.32253737607970834,
+      "n_sku_store_series": 2,
+      "trainable_parameters": null,
+      "tree_count": 500,
+      "serialized_model_bytes": 2775927,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "lightgbm",
+      "origin": null,
+      "scope": "all_development_folds",
+      "training_time_seconds": 0.31268495903350413,
+      "prediction_time_seconds": 0.00985241704620421,
+      "inference_seconds_per_sku_store": 0.004926208523102105,
+      "total_runtime_seconds": 0.32253737607970834,
+      "n_sku_store_series": 2,
+      "trainable_parameters": null,
+      "tree_count": 500,
+      "serialized_model_bytes": 2775927,
+      "resident_state_bytes": null
+    }
+  ],
+  "backtest_execution_seconds": 0.4349824170349166,
+  "pipeline_execution_seconds_before_metadata_write": 26.540734332986176,
+  "statistical_settings": {
+    "bootstrap_iterations": 2000,
+    "confidence": 0.95,
+    "dm_min_origins": 8,
+    "seed": 42
+  },
+  "final_holdout": {
+    "evaluated": false,
+    "used_for_tuning": false,
+    "origin": 1913,
+    "target_days": [
+      1914,
+      1941
+    ]
+  },
+  "dashboard_files": [
+    "dashboard/overall_model_metrics.parquet",
+    "dashboard/ranking_overall_accuracy.csv",
+    "dashboard/prediction_intervals.parquet",
+    "dashboard/runtime_comparisons.csv",
+    "dashboard/ranking_computational_efficiency.csv",
+    "dashboard/sku_store_metrics.parquet",
+    "dashboard/store_metrics.parquet",
+    "dashboard/demand_segment_metrics.parquet",
+    "dashboard/ranking_probabilistic_performance.csv",
+    "dashboard/horizon_metrics.parquet",
+    "dashboard/ranking_horizon_performance.csv",
+    "dashboard/forecast_predictions.csv",
+    "dashboard/forecast_origin_metrics.parquet",
+    "dashboard/store_metrics.csv",
+    "dashboard/demand_segment_metrics.csv",
+    "dashboard/forecast_origin_metrics.csv",
+    "dashboard/prediction_intervals.csv",
+    "dashboard/overall_model_metrics.csv",
+    "dashboard/horizon_metrics.csv",
+    "dashboard/forecast_predictions.parquet",
+    "dashboard/sku_store_metrics.csv",
+    "dashboard/ranking_demand_segment_performance.csv"
+  ],
+  "comparison_files": [
+    "statistics/paired_comparisons.csv",
+    "statistics/dm_tests.csv",
+    "statistics/bootstrap.csv"
+  ],
+  "ranking_files": [
+    "rankings/overall_accuracy.csv",
+    "rankings/horizon_performance.csv",
+    "rankings/demand_segment_performance.csv",
+    "rankings/probabilistic_performance.csv",
+    "rankings/computational_efficiency.csv"
+  ],
+  "visualizations": {
+    "output_dir": "/Users/sanchitgarg/Desktop/aml-project/reports/evaluation_runs/lightgbm-real-singlethread-20261114/visualizations",
+    "figures": [
+      "accuracy_metrics.png",
+      "horizon_accuracy.png",
+      "prediction_interval_coverage.png",
+      "prediction_interval_widths.png",
+      "probabilistic_forecasts_actual_median_intervals.png",
+      "runtime_comparison.png",
+      "sku_store_analysis.png",
+      "store_model_mae.png"
+    ],
+    "plotted_datasets": [
+      "best_model_per_sku_store.csv",
+      "horizon_metrics.csv",
+      "overall_metrics.csv",
+      "probabilistic_model_metrics.csv",
+      "representative_series_forecasts.csv",
+      "runtime_comparison.csv",
+      "sku_store_model_metrics.csv",
+      "store_metrics.csv",
+      "worst_sku_store_series.csv"
+    ],
+    "selected_detail_series_id": "FOODS_1_019__WI_1",
+    "probabilistic_models": []
+  },
+  "deep_ar_fit_strategy": "Fresh origin-specific model fit per fold; adapter requires exact fitted origin and has no safe incremental update API."
+}

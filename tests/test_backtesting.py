@@ -38,6 +38,45 @@ def test_inputs_allowlist_and_expanding_history(tiny_panel):
         assert not any(c.startswith("snap") or "rolling" in c or "availability" in c for c in inputs.future_known)
 
 
+def test_sliding_training_window_and_origin_generation(tiny_panel):
+    from copy import deepcopy
+    from src.evaluation.splits_validation import validate_forecast_inputs_chronology
+    panel, cfg = tiny_panel
+    sliding = deepcopy(cfg)
+    sliding["forecast"]["development_origins"] = None
+    sliding["backtest"] = {"window_mode": "sliding", "training_window_days": 4,
+                           "step_size": 3, "origin_start": 6}
+    folds = development_splits(sliding)
+    assert [fold.origin for fold in folds] == [6, 9]
+    assert [(fold.train_start, fold.origin) for fold in folds] == [(3, 6), (6, 9)]
+    inputs = construct_inputs(panel, folds[0])
+    assert inputs.history.day_num.min() == 3
+    assert inputs.history.day_num.max() == 6
+    assert len(inputs.history) == 3 * 4
+    assert validate_forecast_inputs_chronology(inputs)["history_days"] == [3, 6]
+
+
+def test_sku_store_filter_and_standardized_results_files(tiny_panel, tmp_path):
+    from copy import deepcopy
+    panel, cfg = tiny_panel
+    selected = deepcopy(cfg)
+    selected["forecast"]["development_origins"] = [6]
+    selected["backtest"] = {"window_mode": "expanding", "step_size": 3,
+                            "sku_ids": ["A"], "store_ids": ["CA_1"]}
+    predictions, _, metadata = run_backtest(panel, selected, DummyForecaster, tmp_path)
+    assert len(predictions) == 3
+    assert metadata["series_count"] == 1
+    results = pd.read_csv(tmp_path / "backtesting_results.csv")
+    assert list(results.columns) == ["sku_id", "store_id", "forecast_origin", "origin",
+                                     "forecast_date", "horizon_day", "actual_sales",
+                                     "model_name", "point_forecast"]
+    assert set(results.sku_id) == {"A"}
+    assert set(results.store_id) == {"CA_1"}
+    assert results.forecast_origin.nunique() == 1
+    assert list(results.horizon_day) == [1, 2, 3]
+    assert (tmp_path / "backtesting_results.parquet").is_file()
+
+
 def test_future_mutations_do_not_change_model_inputs(tiny_panel):
     panel, cfg = tiny_panel
     fold = development_splits(cfg)[0]
@@ -163,4 +202,12 @@ def test_future_calendar_inconsistency_rejected(tiny_panel):
     changed = panel.copy()
     changed.loc[changed.day_num.eq(7), "date"] += pd.Timedelta(days=1)
     with pytest.raises(ValueError, match="Future dates"):
+        construct_inputs(changed, development_splits(cfg)[0])
+
+
+def test_historical_calendar_offset_inconsistency_rejected(tiny_panel):
+    panel, cfg = tiny_panel
+    changed = panel.copy()
+    changed.loc[changed.day_num.eq(4), "date"] += pd.Timedelta(days=2)
+    with pytest.raises(ValueError, match="Historical dates"):
         construct_inputs(changed, development_splits(cfg)[0])

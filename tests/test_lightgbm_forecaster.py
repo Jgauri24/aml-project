@@ -39,6 +39,10 @@ def tiny_panel_preprocessed(tiny_project):
 # ── Unit tests ────────────────────────────────────────────────────────────────
 
 class TestLightGBMForecasterUnit:
+    def test_default_training_uses_one_worker(self):
+        """Keep native LightGBM execution stable across the supported Mac builds."""
+        assert LightGBMForecaster()._params["n_jobs"] == 1
+
     def test_fit_returns_self(self, tiny_inputs):
         model = LightGBMForecaster()
         result = model.fit(tiny_inputs)

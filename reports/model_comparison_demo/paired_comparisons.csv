@@ -1,0 +1,16 @@
+model_a,model_b,loss,mean_difference_a_minus_b,median_difference,sd_difference,n_paired_rows,n_series,n_origins,unmatched_rows_a,unmatched_rows_b
+kalman_local_level,lightgbm,absolute_error,0.2828848241044143,0.4271495925000002,0.25151741682127077,56,2,1,0,0
+kalman_local_level,lightgbm,squared_error,0.2075511275580986,0.19850154130757772,0.3538167024738918,56,2,1,0,0
+kalman_local_level,deepar,absolute_error,-0.7533602005384429,-0.5544648820714828,0.6862821870341254,56,2,1,0,0
+kalman_local_level,deepar,squared_error,-1.9803571760157117,-0.8014984586924223,2.192136087632535,56,2,1,0,0
+kalman_local_level,deepar,pinball_q10,-0.10443801860604093,-0.07352933667403251,0.04283592373538523,56,2,1,0,0
+kalman_local_level,deepar,pinball_q50,-0.37668010026922144,-0.2772324410357414,0.3431410935170627,56,2,1,0,0
+kalman_local_level,deepar,pinball_q90,-0.12214998917097615,-0.0015925726911836437,0.38890868066399564,56,2,1,0,0
+lightgbm,deepar,absolute_error,-1.0362450246428572,-1.0,0.8420341888268432,56,2,1,0,0
+lightgbm,deepar,squared_error,-2.1879083035738103,-1.0,2.4025635977106887,56,2,1,0,0
+naive_weekly_seasonal,kalman_local_level,absolute_error,-0.3448540851758429,-0.4455351179285172,0.5240359718115203,56,2,1,0,0
+naive_weekly_seasonal,kalman_local_level,squared_error,-0.19374996684143123,-0.19850154130757772,0.7585306008967819,56,2,1,0,0
+naive_weekly_seasonal,lightgbm,absolute_error,-0.06196926107142856,0.0,0.5022317251858449,56,2,1,0,0
+naive_weekly_seasonal,lightgbm,squared_error,0.013801160716667427,0.0,0.5406721441504561,56,2,1,0,0
+naive_weekly_seasonal,deepar,absolute_error,-1.0982142857142858,-1.0,0.9554610636524359,56,2,1,0,0
+naive_weekly_seasonal,deepar,squared_error,-2.174107142857143,-1.0,2.67816068279279,56,2,1,0,0

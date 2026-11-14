@@ -1,0 +1,2 @@
+model,scope,n_rows,n_observed,mae,rmse,wape,smape,mase,n_mase,pinball_q10,pinball_q50,pinball_q90,coverage_80,mean_interval_width_80,wis_80
+lightgbm,portfolio,56,56,1.864852488977802,3.20905390818902,0.6916009230646153,122.76961240697703,0.6127811394829309,56,,,,,,

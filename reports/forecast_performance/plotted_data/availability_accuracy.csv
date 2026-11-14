@@ -1,0 +1,6 @@
+analysis,available,source_file,reason
+MAE,True,integrated_model_comparison.csv,
+RMSE,True,integrated_model_comparison.csv,
+WAPE,True,integrated_model_comparison.csv,
+sMAPE,False,integrated_model_comparison.csv,Metric not recorded in source summary
+MASE,False,integrated_model_comparison.csv,Metric not recorded in source summary

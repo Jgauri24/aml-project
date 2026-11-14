@@ -54,7 +54,7 @@ Outputs are under `data/processed/kalman_forecaster/<variant>/`. The command
 loads only through `final_origin`, uses the existing `run_backtest`, and does
 not evaluate the final holdout.
 
-`factory` takes **no arguments** and must return a **fresh BaseForecaster instance** each time. Do not pass a fitted object, an estimator class that does not implement this contract, or a lambda returning a shared singleton. Constructor parameters belong in a closure or `functools.partial`. The engine invokes the factory once per development origin, then calls `fit(inputs)` followed by `predict(inputs)`. The return from `fit` is ignored; returning `self` is conventional.
+`factory` takes **no arguments** and must return a **fresh BaseForecaster instance** each time. Do not pass a fitted object, an estimator class that does not implement this contract, or a lambda returning a shared singleton. Constructor parameters belong in a closure or `functools.partial`. The engine invokes the factory once per development origin, then calls `fit(inputs)` followed by `return_forecasts(inputs)`. The base method delegates to the existing `predict(inputs)` implementation so model forecast logic stays unchanged. The return from `fit` is ignored; returning `self` is conventional.
 
 A global-model adapter owns one global model per fold. A per-series adapter can own its collection of 240 independently fitted filters inside that one fold-local adapter. Both produce the same forecast table. Old fold models are released rather than retained by the engine; weak references still detect reuse of a live model. Model code must release any external GPU/cache/global references it creates itself.
 

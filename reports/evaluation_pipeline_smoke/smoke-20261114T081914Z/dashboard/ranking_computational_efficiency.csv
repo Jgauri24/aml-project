@@ -1,0 +1,13 @@
+model,value,scope,metric,rank
+deepar,2.533545167068951,computational_efficiency,fit_seconds,4.0
+kalman_local_level_seasonal,0.6640070000430569,computational_efficiency,fit_seconds,3.0
+lightgbm,0.027929042000323534,computational_efficiency,fit_seconds,2.0
+naive_weekly_seasonal,0.003407459007576108,computational_efficiency,fit_seconds,1.0
+deepar,0.011754708015359938,computational_efficiency,predict_seconds,4.0
+kalman_local_level_seasonal,0.002935292082838714,computational_efficiency,predict_seconds,2.0
+lightgbm,0.0068832909455522895,computational_efficiency,predict_seconds,3.0
+naive_weekly_seasonal,0.0011576249962672591,computational_efficiency,predict_seconds,1.0
+deepar,2.5452998750843108,computational_efficiency,total_seconds,4.0
+kalman_local_level_seasonal,0.6669422921258956,computational_efficiency,total_seconds,3.0
+lightgbm,0.034812332945875823,computational_efficiency,total_seconds,2.0
+naive_weekly_seasonal,0.004565084003843367,computational_efficiency,total_seconds,1.0

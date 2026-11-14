@@ -33,7 +33,9 @@ DEFAULT_PARAMS = {
     "objective": "regression_l1", "metric": "mae", "num_leaves": 63,
     "learning_rate": 0.05, "feature_fraction": 0.8, "bagging_fraction": 0.8,
     "bagging_freq": 1, "min_child_samples": 20, "n_estimators": 500,
-    "verbose": -1, "n_jobs": -1, "random_state": 42,
+    # Single-threaded execution avoids native OpenMP crashes in some local
+    # macOS/Python builds and makes the default fold runtime reproducible.
+    "verbose": -1, "n_jobs": 1, "random_state": 42,
 }
 TUNING_GRID = [
     {"num_leaves": 31, "learning_rate": 0.05, "n_estimators": 500},

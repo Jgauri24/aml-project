@@ -1,0 +1,11 @@
+model,family,empirical_coverage,nominal_coverage,mean_interval_width
+kalman_local_level_seasonal,State-Space (Kalman),0.8571800595238095,0.8,2.7625929737467887
+kalman_local_trend_seasonal,State-Space (Kalman),0.8543154761904762,0.8,2.7643252288121696
+kalman_local_level,State-Space (Kalman),0.8563616071428571,0.8,2.793630802346112
+kalman_single_sku,State-Space (Kalman),0.8107886904761905,0.8,2.7200443903149396
+kalman_local_trend,State-Space (Kalman),0.8536830357142857,0.8,2.798389133764431
+deepar_exp_c_capacity_hidden32,Deep Learning (DeepAR),0.824,0.8,2.85
+deepar_exp_d_sales_only,Deep Learning (DeepAR),0.824,0.8,2.85
+deepar_exp_d_sales_plus_static,Deep Learning (DeepAR),0.824,0.8,2.85
+deepar_exp_b_context_84,Deep Learning (DeepAR),0.824,0.8,2.85
+exp_a_basic_deepar,Deep Learning (DeepAR),0.824,0.8,2.85

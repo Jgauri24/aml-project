@@ -141,13 +141,16 @@ def validate_forecast_inputs_chronology(inputs: ForecastInputs) -> Dict[str, Any
     min_hist_day = int(inputs.history["day_num"].min())
     if max_hist_day != origin:
         raise ValueError(f"History max day_num ({max_hist_day}) does not match origin ({origin})")
-    if min_hist_day != 1:
-        raise ValueError(f"History min day_num ({min_hist_day}) must be 1")
+    if min_hist_day < 1 or min_hist_day > origin:
+        raise ValueError("History must start on a valid day at or before origin")
 
     # Check series day counts
     day_counts = inputs.history.groupby("series_id", observed=True)["day_num"].count()
-    if not day_counts.eq(origin).all():
-        raise ValueError(f"All series must have exactly {origin} consecutive historical days")
+    expected_history_length = origin - min_hist_day + 1
+    if not day_counts.eq(expected_history_length).all():
+        raise ValueError("All series must have complete consecutive days in the configured training window")
+    if set(inputs.history.day_num.unique()) != set(range(min_hist_day, origin + 1)):
+        raise ValueError("Training history has a gap inside its configured window")
 
     # 2. Future known boundary
     min_future_day = int(inputs.future_known["target_day_num"].min())

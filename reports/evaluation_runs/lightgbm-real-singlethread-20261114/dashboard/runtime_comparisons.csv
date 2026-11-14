@@ -1,0 +1,3 @@
+model,origin,scope,training_time_seconds,prediction_time_seconds,inference_seconds_per_sku_store,total_runtime_seconds,n_sku_store_series,trainable_parameters,tree_count,serialized_model_bytes,resident_state_bytes
+lightgbm,1885,fold,0.31268495903350413,0.00985241704620421,0.004926208523102105,0.32253737607970834,2,,500,2775927,
+lightgbm,,all_development_folds,0.31268495903350413,0.00985241704620421,0.004926208523102105,0.32253737607970834,2,,500,2775927,

@@ -1,0 +1,8 @@
+scope,model,metric,value,rank
+overall_accuracy,lightgbm,mae,1.864852488977802,1.0
+overall_accuracy,lightgbm,rmse,3.20905390818902,1.0
+overall_accuracy,lightgbm,wape,0.6916009230646153,1.0
+overall_accuracy,lightgbm,pinball_q10,,
+overall_accuracy,lightgbm,pinball_q50,,
+overall_accuracy,lightgbm,pinball_q90,,
+overall_accuracy,lightgbm,wis_80,,

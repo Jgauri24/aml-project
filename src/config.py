@@ -17,14 +17,33 @@ def load_config(path=None):
         raise ValueError("minimum_observed_fraction must be in (0, 1]")
     if cfg["metrics"]["zero_wape_denominator"] != "nan":
         raise ValueError("Only explicit NaN for zero WAPE denominator is supported")
-    origins = forecast["development_origins"]
-    if origins != sorted(set(origins)) or not origins:
+    origins = forecast.get("development_origins")
+    backtest = cfg.get("backtest", {})
+    if origins and (origins != sorted(set(origins))):
         raise ValueError("Development origins must be distinct and increasing")
-    if selection["cutoff_day"] > min(origins):
+    if not origins and backtest.get("origin_start") is None:
+        raise ValueError("Configure development_origins or backtest.origin_start")
+    step_size = int(backtest.get("step_size", forecast["horizon"]))
+    if step_size < 1:
+        raise ValueError("backtest.step_size must be positive")
+    if backtest.get("window_mode", "expanding") not in {"expanding", "sliding"}:
+        raise ValueError("backtest.window_mode must be expanding or sliding")
+    if backtest.get("window_mode", "expanding") == "sliding":
+        if backtest.get("training_window_days") is None or int(backtest["training_window_days"]) < 1:
+            raise ValueError("Sliding window requires positive backtest.training_window_days")
+    elif backtest.get("training_window_days") is not None:
+        raise ValueError("backtest.training_window_days requires window_mode: sliding")
+    if origins and selection["cutoff_day"] > min(origins):
         raise ValueError("Selection cannot see beyond the first development origin")
     if cfg["eda"]["cutoff_day"] > selection["cutoff_day"]:
         raise ValueError("EDA cutoff exceeds the selection cutoff")
-    if max(origins) + forecast["horizon"] > forecast["final_origin"]:
+    effective_origins = origins or list(range(
+        int(backtest["origin_start"]), forecast["final_origin"] - forecast["horizon"] + 1, step_size))
+    if not effective_origins:
+        raise ValueError("No development origins fit before the reserved holdout")
+    if selection["cutoff_day"] > min(effective_origins):
+        raise ValueError("Selection cannot see beyond the first development origin")
+    if max(effective_origins) + forecast["horizon"] > forecast["final_origin"]:
         raise ValueError("Development windows overlap the final holdout")
     if forecast["final_origin"] + forecast["horizon"] != forecast["final_end_day"]:
         raise ValueError("Final window must match the configured horizon")

@@ -1,0 +1,79 @@
+{
+  "model": "kalman_local_level_seasonal",
+  "purpose": "development evaluation",
+  "generated_at_utc": "2026-11-14T09:47:40.184474+00:00",
+  "python": "3.13.12",
+  "pandas": "3.0.2",
+  "seed": 42,
+  "config_sha256": "3165902b6103db83df9b16c7305b943c74b4d96468b2c264a55bf07eb581e098",
+  "prediction_rows": 26880,
+  "folds": [
+    {
+      "model": "kalman_local_level_seasonal",
+      "origin": 1801,
+      "train_rows": 432240,
+      "forecast_rows": 6720,
+      "n_series": 240,
+      "fit_seconds": 345.25909099995624,
+      "predict_seconds": 0.3510324590606615,
+      "total_seconds": 345.6101234590169,
+      "prediction_seconds_per_series": 0.0014626352460860895,
+      "resident_state_bytes": 309120
+    },
+    {
+      "model": "kalman_local_level_seasonal",
+      "origin": 1829,
+      "train_rows": 438960,
+      "forecast_rows": 6720,
+      "n_series": 240,
+      "fit_seconds": 342.59743029193487,
+      "predict_seconds": 0.3481284170411527,
+      "total_seconds": 342.945558708976,
+      "prediction_seconds_per_series": 0.001450535071004803,
+      "resident_state_bytes": 309120
+    },
+    {
+      "model": "kalman_local_level_seasonal",
+      "origin": 1857,
+      "train_rows": 445680,
+      "forecast_rows": 6720,
+      "n_series": 240,
+      "fit_seconds": 341.0395316249924,
+      "predict_seconds": 0.2763085829792544,
+      "total_seconds": 341.31584020797163,
+      "prediction_seconds_per_series": 0.0011512857624135602,
+      "resident_state_bytes": 309120
+    },
+    {
+      "model": "kalman_local_level_seasonal",
+      "origin": 1885,
+      "train_rows": 452400,
+      "forecast_rows": 6720,
+      "n_series": 240,
+      "fit_seconds": 345.83603262505494,
+      "predict_seconds": 0.3519978339318186,
+      "total_seconds": 346.18803045898676,
+      "prediction_seconds_per_series": 0.0014666576413825776,
+      "resident_state_bytes": 309120
+    }
+  ],
+  "window_mode": "expanding",
+  "training_window_days": null,
+  "step_size": 28,
+  "sku_filter": null,
+  "store_filter": null,
+  "series_count": 240,
+  "origin_dates": {
+    "1801": "2016-01-03",
+    "1829": "2016-01-31",
+    "1857": "2016-02-28",
+    "1885": "2016-03-27"
+  },
+  "max_target_day": 1913,
+  "final_holdout_evaluated": false,
+  "aggregation": "pooled over nonmissing actuals; WAPE ratio (not percent); no quantiles -> NaN pinball",
+  "availability": {
+    "future_prices": "forbidden",
+    "future_snap": "excluded"
+  }
+}

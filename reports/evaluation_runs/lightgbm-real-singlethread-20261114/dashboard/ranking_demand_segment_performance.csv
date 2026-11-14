@@ -1,0 +1,5 @@
+scope,demand_segment,model,metric,value,rank
+demand_segment,high,lightgbm,mae,0.34101084254509306,1.0
+demand_segment,low,lightgbm,mae,3.3886941354105105,1.0
+demand_segment,high,lightgbm,wape,,
+demand_segment,low,lightgbm,wape,0.6283671244469821,1.0
