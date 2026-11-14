@@ -1,0 +1,11 @@
+model,segment,mae,wape,naive_mae,relative_mae_vs_naive_pct,failure_mode,severity
+Naive (last-value),all,1.2479,1.0332,1.1869,5.1,high_wape_exceeds_mean,high
+Seasonal Naive,intermittent,0.8346,1.1976,0.8346,0.0,high_wape_exceeds_mean,high
+Seasonal Naive,low,0.424,1.34,0.424,0.0,high_wape_exceeds_mean,high
+Seasonal Naive,medium,0.8346,1.1976,0.8346,0.0,high_wape_exceeds_mean,high
+Seasonal Naive,sparse_or_cold_start,0.424,1.34,0.424,0.0,high_wape_exceeds_mean,high
+Kalman LL+Seas,low,0.3922,1.2396,0.424,-7.5,high_wape_exceeds_mean,high
+Kalman LL+Seas,sparse_or_cold_start,0.3922,1.2396,0.424,-7.5,high_wape_exceeds_mean,high
+Kalman LL+Seas,intermittent,0.7053,1.0122,0.8346,-15.5,high_wape_exceeds_mean,high
+Kalman LL+Seas,medium,0.7053,1.0122,0.8346,-15.5,high_wape_exceeds_mean,high
+deepar,low,0.3009,0.9511,0.424,-29.0,global_model_poor_on_sparse,none

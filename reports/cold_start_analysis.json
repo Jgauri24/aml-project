@@ -1,0 +1,143 @@
+{
+  "phase": "Phase 2 \u2014 Deep Learning Evaluation",
+  "member": "Member 4 \u2014 Cold-Start and Sparse Demand",
+  "cohort": {
+    "n_series": 240,
+    "n_folds": 4,
+    "fold_origins": [
+      1801,
+      1829,
+      1857,
+      1885
+    ],
+    "horizon_days": 28,
+    "total_test_points": 26880
+  },
+  "segmentation": {
+    "method": "Syntetos-Boylan-Croston",
+    "thresholds": {
+      "intermittent_zero_frac_min": 0.1,
+      "sparse_zero_frac_min": 0.5,
+      "cold_start_days_max": 90
+    },
+    "counts": {
+      "dense": 80,
+      "intermittent": 80,
+      "cold_start": 80
+    },
+    "total": 240
+  },
+  "best_model_overall": {
+    "name": "lightgbm",
+    "mae": 0.9227355342844346
+  },
+  "local_vs_global_by_segment": {
+    "dense": {
+      "best_model": "LightGBM",
+      "best_mae": 1.8618,
+      "best_family": "Global (LightGBM)"
+    },
+    "intermittent": {
+      "best_model": "LightGBM",
+      "best_mae": 0.623,
+      "best_family": "Global (LightGBM)"
+    },
+    "sparse_or_cold_start": {
+      "best_model": "LightGBM",
+      "best_mae": 0.3003,
+      "best_family": "Global (LightGBM)"
+    }
+  },
+  "cold_start_window_analysis": {
+    "models_tested": [
+      "DeepAR (best)",
+      "Kalman LL+Seas",
+      "Kalman Single-SKU",
+      "LightGBM",
+      "Seasonal Naive"
+    ],
+    "windows_tested_days": [
+      30,
+      60,
+      90,
+      180,
+      364,
+      1800
+    ],
+    "most_sensitive_model": "Kalman Single-SKU",
+    "most_robust_model": "Seasonal Naive"
+  },
+  "censoring_analysis": {
+    "summary": "Censoring affects \u2248 9.5 % of all observation-days on the low-volume segment, introducing a downward bias of roughly 9.5 % in mean demand estimates. For high-volume SKUs the effect is negligible (\u2248 0.5 %). Without inventory records the M5 dataset does not allow precise censoring correction; the recommended mitigation is price-availability weighting in the Kalman observation noise.",
+    "low_band_censored_frac_of_all_days": 0.095,
+    "mitigation_strategies": [
+      "Price-availability proxy",
+      "Tobit / censored regression",
+      "Zero-inflated models",
+      "Intermittent demand models"
+    ]
+  },
+  "failure_cases": {
+    "n_identified": 10,
+    "top_failures": [
+      {
+        "model": "Naive (last-value)",
+        "segment": "all",
+        "mae": 1.2479,
+        "wape": 1.0332,
+        "naive_mae": 1.1869,
+        "relative_mae_vs_naive_pct": 5.1,
+        "failure_mode": "high_wape_exceeds_mean",
+        "severity": "high"
+      },
+      {
+        "model": "Seasonal Naive",
+        "segment": "intermittent",
+        "mae": 0.8346,
+        "wape": 1.1976,
+        "naive_mae": 0.8346,
+        "relative_mae_vs_naive_pct": 0.0,
+        "failure_mode": "high_wape_exceeds_mean",
+        "severity": "high"
+      },
+      {
+        "model": "Seasonal Naive",
+        "segment": "low",
+        "mae": 0.424,
+        "wape": 1.34,
+        "naive_mae": 0.424,
+        "relative_mae_vs_naive_pct": 0.0,
+        "failure_mode": "high_wape_exceeds_mean",
+        "severity": "high"
+      },
+      {
+        "model": "Seasonal Naive",
+        "segment": "medium",
+        "mae": 0.8346,
+        "wape": 1.1976,
+        "naive_mae": 0.8346,
+        "relative_mae_vs_naive_pct": 0.0,
+        "failure_mode": "high_wape_exceeds_mean",
+        "severity": "high"
+      },
+      {
+        "model": "Seasonal Naive",
+        "segment": "sparse_or_cold_start",
+        "mae": 0.424,
+        "wape": 1.34,
+        "naive_mae": 0.424,
+        "relative_mae_vs_naive_pct": 0.0,
+        "failure_mode": "high_wape_exceeds_mean",
+        "severity": "high"
+      }
+    ]
+  },
+  "figures": {
+    "segment_distribution": "/Users/saumyasoni/Desktop/aml-project/reports/figures/cold_start_01_segment_distribution.png",
+    "model_mae_by_segment": "/Users/saumyasoni/Desktop/aml-project/reports/figures/cold_start_02_model_mae_by_segment.png",
+    "local_vs_global": "/Users/saumyasoni/Desktop/aml-project/reports/figures/cold_start_03_local_vs_global.png",
+    "window_degradation": "/Users/saumyasoni/Desktop/aml-project/reports/figures/cold_start_04_window_degradation.png",
+    "failure_heatmap": "/Users/saumyasoni/Desktop/aml-project/reports/figures/cold_start_05_failure_heatmap.png",
+    "censoring_analysis": "/Users/saumyasoni/Desktop/aml-project/reports/figures/cold_start_06_censoring_analysis.png"
+  }
+}
