@@ -11,7 +11,7 @@
   seasonal naive, seasonal Kalman, LightGBM and the existing custom PyTorch DeepAR.
 - Saved per-origin trained artifacts, predictions, runtimes, conditional metrics,
   checkpoint training curves and integrity manifests.
-- An eight-page IEEE paper and 12-slide editable presentation. Both preserve
+- An eight-page IEEE paper and six-slide editable presentation. Both preserve
   earlier results while distinguishing their actual evaluation scopes.
 - A refreshed executed uncertainty notebook, focused unit tests and complete
   setup and independent-replication instructions.

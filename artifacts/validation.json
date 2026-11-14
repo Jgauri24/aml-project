@@ -13,8 +13,8 @@
     "rendered_and_visually_reviewed": true
   },
   "presentation": {
-    "slides": 12,
-    "native_charts": 9,
+    "slides": 6,
+    "native_charts": 3,
     "native_tables": 3,
     "layout_findings": 0,
     "warnings": [],
@@ -26,7 +26,7 @@
   },
   "files": {
     "paper/AML_IEEE_Final_Report.pdf": "b9a54e779139ca18dd3382c7efa33f82e22f11bad4d1f75a0b4fa77febd9f606",
-    "presentation/Retail_Demand_Forecasting_Final_Reviewed.pptx": "fba21bc08573ff52f7be62ab9346da06825a8837b84abb8e5b9ec1119cc52e3a",
-    "release/manifest.json": "26bfbac240ba5225df7a650af101ea2e7690441b88e23d2794020ff2104f5c6b"
+    "release/manifest.json": "26bfbac240ba5225df7a650af101ea2e7690441b88e23d2794020ff2104f5c6b",
+    "presentation/Retail_Demand_Forecasting_6_Slides_Reviewed.pptx": "fb5e81c94c531dc28bbc7ce540ae553ee84c4bc0308209af5693c6c8a79ecdee"
   }
 }

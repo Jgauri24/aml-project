@@ -20,7 +20,7 @@ research forecasts, not current retail predictions.
 ## Final research outputs
 
 - [IEEE research paper](artifacts/paper/AML_IEEE_Final_Report.pdf), with [LaTeX source](artifacts/paper/main.tex).
-- [Editable research presentation](artifacts/presentation/Retail_Demand_Forecasting_Final_Reviewed.pptx), focused on milestones 10–16.
+- [Editable research presentation](artifacts/presentation/Retail_Demand_Forecasting_6_Slides_Reviewed.pptx), focused on milestones 10–16.
 - [Final and development benchmark](artifacts/release/benchmark.csv).
 - [Frozen model settings](configs/final_models.yaml) and [freeze manifest](artifacts/release/freeze.json).
 - [Single final evaluation receipt](artifacts/release/final/receipt.json).
