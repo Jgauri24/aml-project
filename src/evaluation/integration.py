@@ -308,9 +308,9 @@ def load_all_model_benchmarks(
                 "pinball_q10": float(row["pinball_q10"]) if pd.notna(row["pinball_q10"]) else np.nan,
                 "pinball_q50": float(row["pinball_q50"]) if pd.notna(row["pinball_q50"]) else np.nan,
                 "pinball_q90": float(row["pinball_q90"]) if pd.notna(row["pinball_q90"]) else np.nan,
-                "empirical_coverage": 0.824,  # Empirical coverage for DeepAR P10-P90
+                "empirical_coverage": float(row.get("empirical_coverage", np.nan)),
                 "nominal_coverage": 0.80,
-                "mean_interval_width": 2.85,
+                "mean_interval_width": float(row.get("mean_interval_width", np.nan)),
                 "prediction_rows": 26880,
                 "evaluated_folds": 4,
             })
@@ -377,7 +377,7 @@ def generate_integration_summary_markdown(comparison_df: pd.DataFrame) -> str:
         "",
         "1. **Point Sizing Champion (LightGBM)**: Global gradient boosted decision trees achieve the lowest WAPE (0.7640) and lowest MAE (0.9227) by pooling historical patterns across all 240 items and exploiting lag/rolling demand features.",
         "2. **Uncertainty Calibration Champion (Kalman State-Space)**: Kalman filters (`local_level_seasonal` and `local_trend_seasonal`) provide optimal RMSE (2.0535) and near-nominal 80% coverage (85.7% empirical coverage, width 2.76), providing closed-form Gaussian uncertainty envelopes essential for safety-stock sizing.",
-        "3. **Recurrent Probabilistic Forecasting (DeepAR)**: DeepAR achieves solid probabilistic representation (WAPE 0.8493 - 0.9026, empirical coverage 82.4%), excelling on intermittent series where Poisson/Negative-Binomial dynamics model zero-inflation natively.",
+        "3. **DeepAR uncertainty evidence**: Coverage and interval width are reported only when supplied by an evaluated artifact; missing values remain unavailable. Use the Milestone 15 row-level uncertainty analysis to investigate calibration and demand-segment behavior before making comparative claims.",
         "4. **Heuristic Baselines**: Naive weekly seasonal achieves WAPE 0.9828 and Last Value achieves 1.0332, confirming that all learned models outperform simple heuristics.",
         "",
         "## 3. Data Pipeline & Contract Verification",

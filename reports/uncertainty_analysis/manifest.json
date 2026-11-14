@@ -1,0 +1,49 @@
+{
+  "config_sha256": "3165902b6103db83df9b16c7305b943c74b4d96468b2c264a55bf07eb581e098",
+  "panel_sha256": "6fa65b793775446df4cb3240e12b6404a2de1616e30193e66fa24d46bbb5f380",
+  "sources": [
+    {
+      "path": "/Users/luffy/Desktop/Newton projects/aml-project/data/processed/lightgbm/predictions.parquet",
+      "sha256": "266580ee4761751b7de1279581634f3c3cd280020489984c193346fac57350f3"
+    },
+    {
+      "path": "/Users/luffy/Desktop/Newton projects/aml-project/data/processed/kalman_forecaster/local_level/predictions.parquet",
+      "sha256": "6ea8d0354bceda1c20a0c68db14c6d7e15aabb28ae1c955870e53f3abab1f981"
+    },
+    {
+      "path": "/Users/luffy/Desktop/Newton projects/aml-project/data/processed/kalman_forecaster/local_level_seasonal/predictions.parquet",
+      "sha256": "a4748f7a405397ac816609bda93e7d7f1d7c423a3ed2aae3a92f81960a4b8569"
+    },
+    {
+      "path": "/Users/luffy/Desktop/Newton projects/aml-project/data/processed/kalman_forecaster/local_trend/predictions.parquet",
+      "sha256": "9589a7198c511bcb085483d25bcd05282967cced8dc1597b6cfaa69d3e1adb48"
+    },
+    {
+      "path": "/Users/luffy/Desktop/Newton projects/aml-project/data/processed/kalman_forecaster/local_trend_seasonal/predictions.parquet",
+      "sha256": "a83501cfdb277b4856c8c2b1fdf88e939cd03279650b2518a14c639000952f73"
+    },
+    {
+      "path": "/Users/luffy/Desktop/Newton projects/aml-project/data/processed/seasonal_naive/last_value/predictions.parquet",
+      "sha256": "740bcfd94d6c30286e4e1ad776db24fdefde64e538623fe9a778b244c294f516"
+    },
+    {
+      "path": "/Users/luffy/Desktop/Newton projects/aml-project/data/processed/seasonal_naive/weekly_seasonal/predictions.parquet",
+      "sha256": "712750f0c68d9d78a07626b724cc24dbaa0a3ddad376c621bef01e7f8882d62f"
+    }
+  ],
+  "models": [
+    "kalman_local_level",
+    "kalman_local_level_seasonal",
+    "kalman_local_trend",
+    "kalman_local_trend_seasonal",
+    "lightgbm",
+    "naive_last_value",
+    "naive_weekly_seasonal"
+  ],
+  "missing_prediction_files": [
+    "deepar/predictions.parquet"
+  ],
+  "final_holdout_evaluated": false,
+  "nominal_interval_coverage": 0.8,
+  "note": "Descriptive development diagnostics; training provenance must be audited separately."
+}

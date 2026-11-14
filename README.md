@@ -302,3 +302,21 @@ Outputs:
 - [DeepAR technical specification](docs/DEEPAR.md) detailing architecture, likelihood formulas, and teammate integration instructions.
 - `reports/figures/deepar_*.png`: 8 diagnostic and comparison figures.
 
+
+## Milestone 15: uncertainty and paired SKU diagnostics
+
+[Executed uncertainty notebook](notebooks/uncertainty_analysis.ipynb) and
+[usage and methodology](docs/UNCERTAINTY_ANALYSIS.md) extend the existing metrics
+with coverage and width by forecast week and training-volume group, lower/upper
+tail misses, discrete-quantile CDF bounds, and paired per-SKU MAE comparisons.
+All results use genuine saved forecasts on the same validated development grid.
+Missing DeepAR predictions are reported explicitly; point-only models retain NA
+uncertainty metrics. The final holdout is never scored.
+
+```bash
+.venv/bin/python -m scripts.run_uncertainty_analysis
+.venv/bin/python -m pytest tests/test_uncertainty_analysis.py
+```
+
+Results, figures and source hashes are saved under
+[`reports/uncertainty_analysis/`](reports/uncertainty_analysis/report.md).
