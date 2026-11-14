@@ -1,0 +1,83 @@
+{
+  "model": "lightgbm",
+  "purpose": "development evaluation",
+  "generated_at_utc": "2026-11-14T10:44:06.726718+00:00",
+  "python": "3.13.12",
+  "pandas": "3.0.2",
+  "seed": 42,
+  "config_sha256": "3165902b6103db83df9b16c7305b943c74b4d96468b2c264a55bf07eb581e098",
+  "prediction_rows": 26880,
+  "folds": [
+    {
+      "model": "lightgbm",
+      "origin": 1801,
+      "train_rows": 432240,
+      "forecast_rows": 6720,
+      "n_series": 240,
+      "fit_seconds": 13.198316166060977,
+      "predict_seconds": 0.16144808393437415,
+      "total_seconds": 13.35976424999535,
+      "prediction_seconds_per_series": 0.0006727003497265589,
+      "tree_count": 500,
+      "serialized_model_bytes": 2860866
+    },
+    {
+      "model": "lightgbm",
+      "origin": 1829,
+      "train_rows": 438960,
+      "forecast_rows": 6720,
+      "n_series": 240,
+      "fit_seconds": 13.409058833029121,
+      "predict_seconds": 0.16518999997060746,
+      "total_seconds": 13.574248832999729,
+      "prediction_seconds_per_series": 0.0006882916665441977,
+      "tree_count": 500,
+      "serialized_model_bytes": 2846831
+    },
+    {
+      "model": "lightgbm",
+      "origin": 1857,
+      "train_rows": 445680,
+      "forecast_rows": 6720,
+      "n_series": 240,
+      "fit_seconds": 13.341424665995874,
+      "predict_seconds": 0.16217337490525097,
+      "total_seconds": 13.503598040901124,
+      "prediction_seconds_per_series": 0.0006757223954385456,
+      "tree_count": 500,
+      "serialized_model_bytes": 2853804
+    },
+    {
+      "model": "lightgbm",
+      "origin": 1885,
+      "train_rows": 452400,
+      "forecast_rows": 6720,
+      "n_series": 240,
+      "fit_seconds": 14.051239792024717,
+      "predict_seconds": 0.162492208997719,
+      "total_seconds": 14.213732001022436,
+      "prediction_seconds_per_series": 0.0006770508708238292,
+      "tree_count": 500,
+      "serialized_model_bytes": 2857892
+    }
+  ],
+  "window_mode": "expanding",
+  "training_window_days": null,
+  "step_size": 28,
+  "sku_filter": null,
+  "store_filter": null,
+  "series_count": 240,
+  "origin_dates": {
+    "1801": "2016-01-03",
+    "1829": "2016-01-31",
+    "1857": "2016-02-28",
+    "1885": "2016-03-27"
+  },
+  "max_target_day": 1913,
+  "final_holdout_evaluated": false,
+  "aggregation": "pooled over nonmissing actuals; WAPE ratio (not percent); no quantiles -> NaN pinball",
+  "availability": {
+    "future_prices": "forbidden",
+    "future_snap": "excluded"
+  }
+}

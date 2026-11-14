@@ -52,8 +52,9 @@ def run_model_suite(
         forecast, score, meta = run_backtest(panel, cfg, factory, output_dir=model_output)
         if list(forecast.columns) != PREDICTION_COLUMNS:
             raise ValueError(f"{label} did not return the standardized prediction schema")
-        keys = forecast[FUTURE_KEYS].sort_values(FUTURE_KEYS).reset_index(drop=True)
-        if not keys.equals(expected):
+        keys = _comparable_grid(forecast[FUTURE_KEYS])
+        expected_keys = _comparable_grid(expected)
+        if not keys.equals(expected_keys):
             raise ValueError(f"{label} forecast grid differs from the shared cohort/origins/dates")
         if forecast.model.nunique() != 1:
             raise ValueError(f"{label} returned more than one model identity")
@@ -81,3 +82,16 @@ def run_model_suite(
             "model_runs": metadata,
         }, indent=2))
     return predictions, combined_metrics, metadata
+
+
+def _comparable_grid(keys: pd.DataFrame) -> pd.DataFrame:
+    """Normalize identifier/date dtypes before exact forecast-grid comparison.
+
+    Adapters may return ``series_id`` as a categorical or an object/string
+    column. Those representations can contain identical identifiers while
+    ``DataFrame.equals`` reports them as unequal due only to dtype differences.
+    """
+    comparable = keys[FUTURE_KEYS].copy()
+    comparable["series_id"] = comparable["series_id"].astype("string")
+    comparable["target_date"] = pd.to_datetime(comparable["target_date"])
+    return comparable.sort_values(FUTURE_KEYS).reset_index(drop=True)
