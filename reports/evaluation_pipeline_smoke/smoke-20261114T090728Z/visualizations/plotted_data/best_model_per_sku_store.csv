@@ -1,3 +1,0 @@
-series_id,item_id,store_id,model,mae
-ITEM_001__CA_1,ITEM_001,CA_1,naive_weekly_seasonal,0.0
-ITEM_002__TX_1,ITEM_002,TX_1,kalman_local_level_seasonal,0.32011029789695017

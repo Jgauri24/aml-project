@@ -1,0 +1,22 @@
+{
+  "config_sha256": "3165902b6103db83df9b16c7305b943c74b4d96468b2c264a55bf07eb581e098",
+  "panel_sha256": "6fa65b793775446df4cb3240e12b6404a2de1616e30193e66fa24d46bbb5f380",
+  "sources": [
+    {
+      "path": "/Users/luffy/Desktop/Newton projects/aml-project/artifacts/release/development/predictions.parquet",
+      "sha256": "b1cc265ea87d6feed0e90bb03305fb775e562eead0735049f11f569a794797fd"
+    }
+  ],
+  "models": [
+    "deepar",
+    "kalman",
+    "lightgbm",
+    "seasonal_naive"
+  ],
+  "missing_prediction_files": [
+    "deepar/predictions.parquet"
+  ],
+  "final_holdout_evaluated": false,
+  "nominal_interval_coverage": 0.8,
+  "note": "Descriptive development diagnostics; training provenance must be audited separately."
+}

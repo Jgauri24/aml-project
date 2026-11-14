@@ -1,3 +1,0 @@
-series_id,item_id,store_id,model,mae
-FOODS_1_004__TX_2,FOODS_1_004,TX_2,lightgbm,0.34101084254509306
-FOODS_1_019__WI_1,FOODS_1_019,WI_1,lightgbm,3.3886941354105105

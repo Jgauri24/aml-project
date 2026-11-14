@@ -1,0 +1,14 @@
+{
+  "mode": "final",
+  "completed_at_utc": "2026-11-14T19:39:32.109044+00:00",
+  "freeze_sha256": "0d6e44e38e0146fcf7df90a716fbe7343b5a94aef93b70c3e20143ba3adff3b5",
+  "prediction_sha256": "527bbc8f76668844c10a3ae463995881f15de4e6a115374bfd2e30b1f382a040",
+  "final_holdout_evaluated": true,
+  "origins": [
+    1913
+  ],
+  "max_target_day": 1941,
+  "predictions_per_model": 6720,
+  "no_post_holdout_tuning": true,
+  "primary_model": "lightgbm"
+}

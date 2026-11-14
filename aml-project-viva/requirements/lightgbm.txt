@@ -1,3 +1,0 @@
-# Optional isolated environment. Never install this into the baseline .venv.
--r ../requirements.txt
-lightgbm==4.7.0

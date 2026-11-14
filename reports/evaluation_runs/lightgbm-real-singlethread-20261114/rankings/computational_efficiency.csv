@@ -1,4 +1,0 @@
-model,value,scope,metric,rank
-lightgbm,0.31268495903350413,computational_efficiency,fit_seconds,1.0
-lightgbm,0.00985241704620421,computational_efficiency,predict_seconds,1.0
-lightgbm,0.32253737607970834,computational_efficiency,total_seconds,1.0

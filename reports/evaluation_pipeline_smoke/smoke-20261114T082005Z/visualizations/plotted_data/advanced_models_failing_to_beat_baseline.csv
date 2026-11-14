@@ -1,4 +1,0 @@
-index,model,series_not_beaten,series_compared
-0,deepar,2,2
-1,kalman_local_level_seasonal,1,2
-2,lightgbm,1,2

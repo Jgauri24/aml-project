@@ -1,3 +1,0 @@
-model,origin,scope,n_rows,n_observed,mae,rmse,wape,smape,mase,n_mase,pinball_q10,pinball_q50,pinball_q90,coverage_80,mean_interval_width_80,wis_80
-naive_weekly_seasonal,1801,fold_pooled,56,56,3.9642857142857144,5.4050241178264615,1.2906976744186047,133.4962061747776,1.1484681682006308,56,,,,,,
-naive_weekly_seasonal,,all_folds_pooled,56,56,3.9642857142857144,5.4050241178264615,1.2906976744186047,133.4962061747776,1.1484681682006308,56,,,,,,

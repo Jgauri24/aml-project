@@ -1,0 +1,18 @@
+{
+  "python": "3.14.6 (main, Jul 23 2026, 14:51:00) [Clang 22.1.3 ]",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "packages": {
+    "numpy": "2.5.4",
+    "pandas": "3.0.6",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1",
+    "lightgbm": "4.7.0",
+    "streamlit": "1.67.0",
+    "matplotlib": "3.11.2",
+    "pyarrow": "26.0.0"
+  },
+  "torch_threads": 1,
+  "lightgbm_threads": 1,
+  "kalman_workers": 4
+}

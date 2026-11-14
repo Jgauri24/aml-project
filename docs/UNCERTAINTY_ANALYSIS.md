@@ -70,11 +70,13 @@ training provenance still needs separate review: matching prediction keys does
 not establish leakage-free fitting. Origin and SKU errors are dependent, so
 these tables do not claim independent-row statistical significance.
 
-On this checkout, saved DeepAR row-level predictions are absent. The executed
-notebook therefore reports Kalman intervals and point metrics for LightGBM and
-naive models, and explicitly leaves the DeepAR comparison pending. Aggregate
-DeepAR experiment metrics cannot reconstruct its per-SKU quantiles or coverage.
-No model was retrained and no missing DeepAR results were synthesized.
+The original Milestone 15 run lacked saved DeepAR forecasts. The final release
+now provides genuine four-origin DeepAR predictions alongside the three other
+model families under `artifacts/release/development/`. The executed notebook
+uses that complete file and writes `reports/uncertainty_release/`. The original
+seven-model diagnostic outputs remain in `reports/uncertainty_analysis/` as
+historical evidence. Final holdout results live separately under
+`artifacts/release/final/` and are not retrained or rescored by this notebook.
 
 The integration summary loader previously assigned every DeepAR experiment
 coverage `0.824` and width `2.85`, regardless of saved evidence. These constants

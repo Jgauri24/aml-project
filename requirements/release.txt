@@ -1,0 +1,5 @@
+# Full custom-PyTorch forecasting + viewer stack. GluonTS is not required.
+-r torch.txt
+-r ../requirements_ui.txt
+lightgbm==4.7.0
+streamlit==1.67.0

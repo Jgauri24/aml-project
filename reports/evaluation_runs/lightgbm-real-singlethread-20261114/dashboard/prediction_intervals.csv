@@ -1,1 +1,0 @@
-model,series_id,origin,horizon,target_day_num,target_date,y_pred,q10,q50,q90,actual,mase_scale,item_id,store_id
