@@ -77,6 +77,30 @@ def test_cluster_bootstrap_is_reproducible_and_reports_zero_in_interval():
     assert one.iloc[0].zero_in_ci
 
 
+def test_cluster_bootstrap_matches_hand_aggregated_series_resamples():
+    data = forecast_frame(n_origins=2, n_series=3, horizon=2)
+    result = bootstrap_performance_differences(
+        data, "A", "B", metrics=("mae",), n_bootstrap=50, seed=19,
+    ).iloc[0]
+    a = data.loc[data.model.eq("A")].copy()
+    b = data.loc[data.model.eq("B")].copy()
+    paired = a.merge(b, on=["series_id", "origin", "horizon", "target_date"],
+                     suffixes=("_a", "_b"), validate="one_to_one")
+    series = paired.series_id.drop_duplicates().tolist()
+    counts_by_series = np.array([
+        [np.abs(paired.loc[paired.series_id.eq(s), "actual_a"] - paired.loc[paired.series_id.eq(s), "y_pred_a"]).sum(),
+         np.abs(paired.loc[paired.series_id.eq(s), "actual_a"] - paired.loc[paired.series_id.eq(s), "y_pred_b"]).sum(),
+         paired.series_id.eq(s).sum()]
+        for s in series
+    ])
+    draws = np.random.default_rng(19).multinomial(3, np.full(3, 1 / 3), size=50)
+    totals = draws @ counts_by_series
+    differences = totals[:, 0] / totals[:, 2] - totals[:, 1] / totals[:, 2]
+    assert result.difference_a_minus_b == pytest.approx(-1.)
+    assert result.ci_lower == pytest.approx(np.quantile(differences, .025))
+    assert result.ci_upper == pytest.approx(np.quantile(differences, .975))
+
+
 def test_cluster_bootstrap_scores_aligned_probabilistic_quantiles():
     result = bootstrap_performance_differences(
         forecast_frame(n_origins=3, n_series=3), "A", "B",

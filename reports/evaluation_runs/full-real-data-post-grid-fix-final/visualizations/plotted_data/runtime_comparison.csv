@@ -1,0 +1,5 @@
+model,origin,scope,training_time_seconds,prediction_time_seconds,inference_seconds_per_sku_store,total_runtime_seconds,n_sku_store_series,trainable_parameters,tree_count,serialized_model_bytes,resident_state_bytes
+naive_weekly_seasonal,,all_development_folds,1.0811205400386825,0.023074042052030563,2.403546047086517e-05,1.104194582090713,960,,,,
+kalman_local_level_seasonal,,all_development_folds,1974.7825187491253,1.9623524581547827,0.002044117143911232,1976.74487120728,960,,,,309120.0
+lightgbm,,all_development_folds,54.00003945711069,0.6513036678079516,0.0006784413206332828,54.65134312491864,960,,500.0,2860866.0,
+deepar,,all_development_folds,197.98333499988075,7.36336349893827,0.007670170311394031,205.34669849881902,960,63582.0,,,

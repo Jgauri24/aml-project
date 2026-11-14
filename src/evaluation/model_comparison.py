@@ -271,22 +271,92 @@ def bootstrap_performance_differences(
                               "status": "fewer_than_two_series", "unmatched_rows_a": ua,
                               "unmatched_rows_b": ub} for m in metrics])
     rng = np.random.default_rng(seed)
-    by_series = {s: paired.loc[paired.series_id.eq(s)] for s in clusters}
+    codes, cluster_labels = pd.factorize(paired.series_id, sort=False)
+    n_clusters = len(cluster_labels)
+    # A multinomial count vector is equivalent to drawing n_clusters IDs with
+    # replacement. It lets us resample pre-aggregated per-series losses instead
+    # of concatenating thousands of full forecast tables for each bootstrap draw.
+    draw_counts = rng.multinomial(
+        n_clusters, np.full(n_clusters, 1 / n_clusters), size=n_bootstrap
+    )
+    row_counts = np.bincount(codes, minlength=n_clusters).astype(float)
+    draw_row_counts = draw_counts @ row_counts
     alpha = (1 - confidence) / 2
     rows = []
+
+    def cluster_sums(values: np.ndarray) -> np.ndarray:
+        return np.bincount(codes, weights=values, minlength=n_clusters)
+
+    def bootstrap_values(values_a: np.ndarray, values_b: np.ndarray,
+                         denominator: np.ndarray | None = None, *, root: bool = False):
+        sum_a = draw_counts @ cluster_sums(values_a)
+        sum_b = draw_counts @ cluster_sums(values_b)
+        if denominator is not None:
+            denom = draw_counts @ cluster_sums(denominator)
+            valid = denom > 0
+            value_a = np.divide(sum_a, denom, out=np.full_like(sum_a, np.nan), where=valid)
+            value_b = np.divide(sum_b, denom, out=np.full_like(sum_b, np.nan), where=valid)
+        else:
+            valid = draw_row_counts > 0
+            value_a = np.divide(sum_a, draw_row_counts, out=np.full_like(sum_a, np.nan), where=valid)
+            value_b = np.divide(sum_b, draw_row_counts, out=np.full_like(sum_b, np.nan), where=valid)
+            if root:
+                value_a = np.sqrt(value_a)
+                value_b = np.sqrt(value_b)
+        return value_a - value_b
+
+    y = paired.actual_a.to_numpy(float)
+    pred_a = paired.pred_a.to_numpy(float)
+    pred_b = paired.pred_b.to_numpy(float)
+    err_a, err_b = y - pred_a, y - pred_b
+    abs_a, abs_b = np.abs(err_a), np.abs(err_b)
+    sq_a, sq_b = np.square(err_a), np.square(err_b)
+    smape_a = np.divide(200 * abs_a, np.abs(y) + np.abs(pred_a),
+                        out=np.zeros_like(y), where=(np.abs(y) + np.abs(pred_a)) != 0)
+    smape_b = np.divide(200 * abs_b, np.abs(y) + np.abs(pred_b),
+                        out=np.zeros_like(y), where=(np.abs(y) + np.abs(pred_b)) != 0)
+    values_by_metric = {
+        "mae": (abs_a, abs_b, None, False),
+        "rmse": (sq_a, sq_b, None, True),
+        "wape": (abs_a, abs_b, np.abs(y), False),
+        "smape": (smape_a, smape_b, None, False),
+    }
+    taus = {"q10": .1, "q50": .5, "q90": .9}
+    for suffix, tau in taus.items():
+        col_a, col_b = f"{suffix}_a", f"{suffix}_b"
+        if col_a in paired and col_b in paired:
+            quantile_a = paired[col_a].to_numpy(float)
+            quantile_b = paired[col_b].to_numpy(float)
+            if np.isfinite(quantile_a).all() and np.isfinite(quantile_b).all():
+                residual_a, residual_b = y - quantile_a, y - quantile_b
+                values_by_metric[f"pinball_{suffix}"] = (
+                    np.maximum(tau * residual_a, (tau - 1) * residual_a),
+                    np.maximum(tau * residual_b, (tau - 1) * residual_b), None, False,
+                )
+    qcols = [f"{suffix}_{side}" for side in ("a", "b") for suffix in ("q10", "q50", "q90")]
+    if set(qcols).issubset(paired) and np.isfinite(paired[qcols].to_numpy(float)).all():
+        low_a, med_a, high_a = (paired[f"{suffix}_a"].to_numpy(float) for suffix in ("q10", "q50", "q90"))
+        low_b, med_b, high_b = (paired[f"{suffix}_b"].to_numpy(float) for suffix in ("q10", "q50", "q90"))
+        alpha_interval = .2
+        wis_a = (.5 * np.abs(y - med_a) + (alpha_interval / 2) * (
+            high_a - low_a + (2 / alpha_interval) * (low_a - y) * (y < low_a)
+            + (2 / alpha_interval) * (y - high_a) * (y > high_a))) / 1.5
+        wis_b = (.5 * np.abs(y - med_b) + (alpha_interval / 2) * (
+            high_b - low_b + (2 / alpha_interval) * (low_b - y) * (y < low_b)
+            + (2 / alpha_interval) * (y - high_b) * (y > high_b))) / 1.5
+        values_by_metric["wis_80"] = (wis_a, wis_b, None, False)
+
     for metric in metrics:
         a_value = _performance_metric(_paired_model_view(paired, "a"), metric)
         b_value = _performance_metric(_paired_model_view(paired, "b"), metric)
         observed_diff = a_value - b_value
-        draws = []
-        for _ in range(n_bootstrap):
-            sampled = rng.choice(clusters, size=len(clusters), replace=True)
-            sample = pd.concat([by_series[s] for s in sampled], ignore_index=True)
-            a = _performance_metric(_paired_model_view(sample, "a"), metric)
-            b = _performance_metric(_paired_model_view(sample, "b"), metric)
-            if np.isfinite(a) and np.isfinite(b):
-                draws.append(a - b)
-        if draws:
+        if metric not in values_by_metric:
+            draws = np.array([], dtype=float)
+        else:
+            values_a, values_b, denominator, take_root = values_by_metric[metric]
+            draws = bootstrap_values(values_a, values_b, denominator, root=take_root)
+            draws = draws[np.isfinite(draws)]
+        if draws.size:
             lo, hi = np.quantile(draws, [alpha, 1 - alpha])
             status, zero = "ok", bool(lo <= 0 <= hi)
         else:

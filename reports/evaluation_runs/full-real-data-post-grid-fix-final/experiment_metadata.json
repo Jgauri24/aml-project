@@ -1,0 +1,737 @@
+{
+  "experiment_id": "full-real-data-post-grid-fix-final",
+  "created_at_utc": "2026-11-14T11:21:44.235534+00:00",
+  "pipeline_config_path": "/Users/sanchitgarg/Desktop/aml-project/configs/evaluation_pipeline.yaml",
+  "pipeline_config_sha256": "4be14fceca3d35628acdb6daa00ea352e2474c9b937dd4a298945eb9a3dc9122",
+  "base_experiment_config_sha256": "3165902b6103db83df9b16c7305b943c74b4d96468b2c264a55bf07eb581e098",
+  "resolved_backtest_config": {
+    "seed": 42,
+    "paths": {
+      "raw": "data/raw",
+      "interim": "data/interim",
+      "processed": "data/processed",
+      "reports": "reports"
+    },
+    "selection": {
+      "cutoff_day": 1801,
+      "trailing_days": 365,
+      "n_per_group": 80,
+      "groups": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "minimum_observed_fraction": 1.0,
+      "balance_columns": [
+        "store_id",
+        "cat_id"
+      ]
+    },
+    "observation": {
+      "start_day": 1,
+      "end_day": 1941
+    },
+    "forecast": {
+      "horizon": 28,
+      "development_origins": [
+        1801,
+        1829,
+        1857,
+        1885
+      ],
+      "final_origin": 1913,
+      "final_end_day": 1941
+    },
+    "backtest": {
+      "window_mode": "expanding",
+      "training_window_days": null,
+      "step_size": 28,
+      "origin_start": null,
+      "sku_ids": null,
+      "store_ids": null
+    },
+    "availability": {
+      "future_prices": "forbidden",
+      "future_snap": "excluded"
+    },
+    "quality": {
+      "possible_prelaunch_requires_both": true
+    },
+    "eda": {
+      "cutoff_day": 1801,
+      "representative_days": 365,
+      "rolling_windows": [
+        7,
+        28
+      ],
+      "acf_lags": [
+        1,
+        7,
+        14,
+        28
+      ],
+      "intermittency_adi_threshold": 1.32,
+      "variability_cv2_threshold": 0.49,
+      "minimum_price_pairs": 30,
+      "figure_dpi": 130
+    },
+    "metrics": {
+      "quantiles": [
+        0.1,
+        0.5,
+        0.9
+      ],
+      "aggregation": "pooled",
+      "zero_wape_denominator": "nan"
+    }
+  },
+  "dataset": {
+    "source": "/Users/sanchitgarg/Desktop/aml-project/data/processed/demand_panel.parquet",
+    "metadata_path": "/Users/sanchitgarg/Desktop/aml-project/data/processed/panel_metadata.json",
+    "validation": "load_panel verified config and selection hashes",
+    "dataset_sha256": "eb15eb3592ad933ed159c539b3813c3bef2ebe90f67a84ae303eb1f7841a5c16",
+    "panel_metadata": {
+      "generated_at_utc": "2026-11-14T09:23:07.649460+00:00",
+      "python": "3.13.12",
+      "pandas": "3.0.2",
+      "config_sha256": "3165902b6103db83df9b16c7305b943c74b4d96468b2c264a55bf07eb581e098",
+      "source_sha256": {
+        "calendar.csv": "d12b5914ef03e66649adf5dd9e996e6602251c22b7a6af8f1f7e3aa12f8860f5",
+        "sales_train_evaluation.csv": "4b4a47c44c38380d2a9168216fea8c9ff2f31b1ddb772f8a0995952a038b8aa0",
+        "sales_train_validation.csv": "f368e66ed1dbecb48b2cc8fc589bf68b3deddbbb36bf5c88b4d6d0a09b9b6724",
+        "sample_submission.csv": "eb7597afbec367475ef25dc6dbbc009b8faa47fa2107252c72a029e3cdf72343",
+        "sell_prices.csv": "9da3ad1f8b8ccacdbdc70612191dd375ec24a4ac6625c24b75b3bc60b0bed2ef"
+      },
+      "selection_cutoff": 1801,
+      "selection_csv_sha256": "ae420f767d5185b359fe0327c740147f37d4f78712d971330e936d584d41d4ab",
+      "source_sales": "sales_train_evaluation.csv only; no concatenation with validation",
+      "target": "Observed unit sales, not latent demand; zeros preserved; missing targets never filled",
+      "quality_flags": "Past-only at each row timestamp; availability always unknown; no stockout labels",
+      "validation": {
+        "rows": 465840,
+        "series": 240,
+        "days_per_series": 1941,
+        "day_start": 1,
+        "day_end": 1941,
+        "date_start": "2011-01-29",
+        "date_end": "2016-05-22",
+        "duplicate_series_days": 0,
+        "missing_indexed_rows": 0,
+        "missing_targets": 0,
+        "checks": "unique keys, continuity, day/date mapping, static metadata, target/price domain, zero/missing flags",
+        "holdout_policy": "Only mechanical integrity/missingness checks on holdout; no target distribution or performance analysis."
+      },
+      "dtypes": {
+        "series_id": "category",
+        "item_id": "category",
+        "store_id": "category",
+        "dept_id": "category",
+        "cat_id": "category",
+        "state_id": "category",
+        "d": "category",
+        "units_sold": "float32",
+        "day_num": "int16",
+        "date": "datetime64[us]",
+        "wm_yr_wk": "int32",
+        "weekday": "category",
+        "wday": "uint8",
+        "month": "uint8",
+        "year": "int16",
+        "event_name_1": "category",
+        "event_type_1": "category",
+        "event_name_2": "category",
+        "event_type_2": "category",
+        "snap_CA": "uint8",
+        "snap_TX": "uint8",
+        "snap_WI": "uint8",
+        "sell_price": "float32",
+        "snap": "uint8",
+        "is_zero_sale": "boolean",
+        "price_missing": "bool",
+        "possible_prelaunch": "bool",
+        "availability_unknown": "bool"
+      },
+      "memory_bytes": 23331019,
+      "selection": {
+        "seed": 42,
+        "cutoff_day": 1801,
+        "config_sha256": "3165902b6103db83df9b16c7305b943c74b4d96468b2c264a55bf07eb581e098",
+        "total_candidates": 30490,
+        "eligible": 30490,
+        "excluded": 0,
+        "eligibility": "Configured minimum observed fraction through cutoff; no positive-volume filter.",
+        "ranking": "Trailing 365-day mean ascending; series_id breaks ties; equal rank terciles.",
+        "sampling": "Seeded random within store/category strata; round-robin strata per volume tercile.",
+        "compromises": [
+          "Equal group sizes and diversity deliberately change population proportions; no population representativeness claimed."
+        ],
+        "groups": {
+          "low": {
+            "candidates": 10164,
+            "selected": 80,
+            "pool_min_mean": 0.0,
+            "pool_max_mean": 0.3205479383468628,
+            "stores": 10,
+            "categories": 3
+          },
+          "medium": {
+            "candidates": 10163,
+            "selected": 80,
+            "pool_min_mean": 0.3205479383468628,
+            "pool_max_mean": 0.915068507194519,
+            "stores": 10,
+            "categories": 3
+          },
+          "high": {
+            "candidates": 10163,
+            "selected": 80,
+            "pool_min_mean": 0.915068507194519,
+            "pool_max_mean": 92.65753173828125,
+            "stores": 10,
+            "categories": 3
+          }
+        }
+      }
+    }
+  },
+  "selected_series_count": 240,
+  "forecast_origins": [
+    1801,
+    1829,
+    1857,
+    1885
+  ],
+  "forecast_horizon": 28,
+  "training_window": {
+    "mode": "expanding",
+    "days": null
+  },
+  "models": {
+    "seasonal_naive": {
+      "enabled": true,
+      "variant": "weekly_seasonal",
+      "seed": 42
+    },
+    "kalman": {
+      "enabled": true,
+      "variant": "local_level_seasonal",
+      "fit_window": 364,
+      "n_jobs": 1,
+      "seed": 42
+    },
+    "lightgbm": {
+      "enabled": true,
+      "params": {
+        "n_jobs": 1,
+        "random_state": 42
+      },
+      "random_state": 42
+    },
+    "deepar": {
+      "enabled": true,
+      "config": {
+        "context_length": 56,
+        "prediction_length": 28,
+        "hidden_dim": 64,
+        "num_layers": 2,
+        "dropout": 0.1,
+        "use_static_features": true,
+        "use_calendar_features": true,
+        "embedding_dim_map": {
+          "item_id": 16,
+          "store_id": 4,
+          "dept_id": 4,
+          "cat_id": 2,
+          "state_id": 2
+        },
+        "distribution": "negative_binomial",
+        "scaling": true,
+        "missing_target_policy": "zero",
+        "lr": 0.001,
+        "weight_decay": 1e-05,
+        "batch_size": 32,
+        "epochs": 35,
+        "early_stopping_patience": 8,
+        "gradient_clip_norm": 10.0,
+        "val_window_length": 28,
+        "windows_per_series_train": 8,
+        "num_samples": 200,
+        "quantiles": [
+          0.1,
+          0.5,
+          0.9
+        ],
+        "device": "auto",
+        "seed": 42
+      }
+    }
+  },
+  "model_names": [
+    "naive_weekly_seasonal",
+    "kalman_local_level_seasonal",
+    "lightgbm",
+    "deepar"
+  ],
+  "metrics_requested": [
+    "mae",
+    "rmse",
+    "wape",
+    "smape",
+    "mase",
+    "pinball_q10",
+    "pinball_q50",
+    "pinball_q90",
+    "coverage_80",
+    "mean_interval_width_80",
+    "wis_80"
+  ],
+  "metric_summary": [
+    {
+      "model": "deepar",
+      "scope": "portfolio",
+      "n_rows": 26880,
+      "n_observed": 26880,
+      "mae": 0.9594122023809524,
+      "rmse": 2.271552692962407,
+      "wape": 0.7943631603265054,
+      "smape": 68.23924831080127,
+      "mase": 1.4115298044191316,
+      "n_mase": 26880,
+      "pinball_q10": 0.12022656249281552,
+      "pinball_q50": 0.4797061011904762,
+      "pinball_q90": 0.3609494045610163,
+      "coverage_80": 0.9098958333333333,
+      "mean_interval_width_80": 2.4762314005100743,
+      "wis_80": 0.6405880454962053
+    },
+    {
+      "model": "kalman_local_level_seasonal",
+      "scope": "portfolio",
+      "n_rows": 26880,
+      "n_observed": 26880,
+      "mae": 1.0007110300763296,
+      "rmse": 2.0534967730576947,
+      "wape": 0.8285572921130984,
+      "smape": 134.31757196987198,
+      "mase": 1.655404585463034,
+      "n_mase": 26880,
+      "pinball_q10": 0.13182812376079378,
+      "pinball_q50": 0.5003555150381648,
+      "pinball_q90": 0.3306278339295705,
+      "coverage_80": 0.8571800595238095,
+      "mean_interval_width_80": 2.7625929737467887,
+      "wis_80": 0.6418743151523526
+    },
+    {
+      "model": "lightgbm",
+      "scope": "portfolio",
+      "n_rows": 26880,
+      "n_observed": 26880,
+      "mae": 0.9283993002321475,
+      "rmse": 2.1291603004369666,
+      "wape": 0.7686854517246303,
+      "smape": 108.41929319590288,
+      "mase": 1.377254787391932,
+      "n_mase": 26880,
+      "pinball_q10": null,
+      "pinball_q50": null,
+      "pinball_q90": null,
+      "coverage_80": null,
+      "mean_interval_width_80": null,
+      "wis_80": null
+    },
+    {
+      "model": "naive_weekly_seasonal",
+      "scope": "portfolio",
+      "n_rows": 26880,
+      "n_observed": 26880,
+      "mae": 1.1869419642857142,
+      "rmse": 2.5487435630129602,
+      "wape": 0.982750654551055,
+      "smape": 77.77325600836555,
+      "mase": 1.8600215962595144,
+      "n_mase": 26880,
+      "pinball_q10": null,
+      "pinball_q50": null,
+      "pinball_q90": null,
+      "coverage_80": null,
+      "mean_interval_width_80": null,
+      "wis_80": null
+    }
+  ],
+  "runtime_summary": [
+    {
+      "model": "naive_weekly_seasonal",
+      "origin": 1801,
+      "scope": "fold",
+      "training_time_seconds": 0.2699652910232544,
+      "prediction_time_seconds": 0.007705457974225283,
+      "inference_seconds_per_sku_store": 3.210607489260534e-05,
+      "total_runtime_seconds": 0.2776707489974797,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "naive_weekly_seasonal",
+      "origin": 1829,
+      "scope": "fold",
+      "training_time_seconds": 0.2691219999687746,
+      "prediction_time_seconds": 0.004996709059923887,
+      "inference_seconds_per_sku_store": 2.0819621083016195e-05,
+      "total_runtime_seconds": 0.2741187090286985,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "naive_weekly_seasonal",
+      "origin": 1857,
+      "scope": "fold",
+      "training_time_seconds": 0.2727110830601305,
+      "prediction_time_seconds": 0.005261500016786158,
+      "inference_seconds_per_sku_store": 2.1922916736608992e-05,
+      "total_runtime_seconds": 0.27797258307691664,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "naive_weekly_seasonal",
+      "origin": 1885,
+      "scope": "fold",
+      "training_time_seconds": 0.26932216598652303,
+      "prediction_time_seconds": 0.005110375001095235,
+      "inference_seconds_per_sku_store": 2.1293229171230147e-05,
+      "total_runtime_seconds": 0.27443254098761827,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "naive_weekly_seasonal",
+      "origin": null,
+      "scope": "all_development_folds",
+      "training_time_seconds": 1.0811205400386825,
+      "prediction_time_seconds": 0.023074042052030563,
+      "inference_seconds_per_sku_store": 2.403546047086517e-05,
+      "total_runtime_seconds": 1.104194582090713,
+      "n_sku_store_series": 960,
+      "trainable_parameters": null,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "kalman_local_level_seasonal",
+      "origin": 1801,
+      "scope": "fold",
+      "training_time_seconds": 466.1819305000827,
+      "prediction_time_seconds": 0.5358646250097081,
+      "inference_seconds_per_sku_store": 0.002232769270873784,
+      "total_runtime_seconds": 466.7177951250924,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": 309120.0
+    },
+    {
+      "model": "kalman_local_level_seasonal",
+      "origin": 1829,
+      "scope": "fold",
+      "training_time_seconds": 510.0939240830485,
+      "prediction_time_seconds": 0.47995966603048146,
+      "inference_seconds_per_sku_store": 0.0019998319417936727,
+      "total_runtime_seconds": 510.57388374907896,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": 309120.0
+    },
+    {
+      "model": "kalman_local_level_seasonal",
+      "origin": 1857,
+      "scope": "fold",
+      "training_time_seconds": 517.5511614159914,
+      "prediction_time_seconds": 0.4112272090278566,
+      "inference_seconds_per_sku_store": 0.0017134467042827358,
+      "total_runtime_seconds": 517.9623886250192,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": 309120.0
+    },
+    {
+      "model": "kalman_local_level_seasonal",
+      "origin": 1885,
+      "scope": "fold",
+      "training_time_seconds": 480.9555027500028,
+      "prediction_time_seconds": 0.5353009580867365,
+      "inference_seconds_per_sku_store": 0.0022304206586947354,
+      "total_runtime_seconds": 481.4908037080895,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": 309120.0
+    },
+    {
+      "model": "kalman_local_level_seasonal",
+      "origin": null,
+      "scope": "all_development_folds",
+      "training_time_seconds": 1974.7825187491253,
+      "prediction_time_seconds": 1.9623524581547827,
+      "inference_seconds_per_sku_store": 0.002044117143911232,
+      "total_runtime_seconds": 1976.74487120728,
+      "n_sku_store_series": 960,
+      "trainable_parameters": null,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": 309120.0
+    },
+    {
+      "model": "lightgbm",
+      "origin": 1801,
+      "scope": "fold",
+      "training_time_seconds": 13.198316166060977,
+      "prediction_time_seconds": 0.16144808393437415,
+      "inference_seconds_per_sku_store": 0.0006727003497265589,
+      "total_runtime_seconds": 13.35976424999535,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": 500.0,
+      "serialized_model_bytes": 2860866.0,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "lightgbm",
+      "origin": 1829,
+      "scope": "fold",
+      "training_time_seconds": 13.409058833029121,
+      "prediction_time_seconds": 0.16518999997060746,
+      "inference_seconds_per_sku_store": 0.0006882916665441977,
+      "total_runtime_seconds": 13.574248832999729,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": 500.0,
+      "serialized_model_bytes": 2846831.0,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "lightgbm",
+      "origin": 1857,
+      "scope": "fold",
+      "training_time_seconds": 13.341424665995874,
+      "prediction_time_seconds": 0.16217337490525097,
+      "inference_seconds_per_sku_store": 0.0006757223954385456,
+      "total_runtime_seconds": 13.503598040901124,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": 500.0,
+      "serialized_model_bytes": 2853804.0,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "lightgbm",
+      "origin": 1885,
+      "scope": "fold",
+      "training_time_seconds": 14.051239792024717,
+      "prediction_time_seconds": 0.162492208997719,
+      "inference_seconds_per_sku_store": 0.0006770508708238292,
+      "total_runtime_seconds": 14.213732001022436,
+      "n_sku_store_series": 240,
+      "trainable_parameters": null,
+      "tree_count": 500.0,
+      "serialized_model_bytes": 2857892.0,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "lightgbm",
+      "origin": null,
+      "scope": "all_development_folds",
+      "training_time_seconds": 54.00003945711069,
+      "prediction_time_seconds": 0.6513036678079516,
+      "inference_seconds_per_sku_store": 0.0006784413206332828,
+      "total_runtime_seconds": 54.65134312491864,
+      "n_sku_store_series": 960,
+      "trainable_parameters": null,
+      "tree_count": 500.0,
+      "serialized_model_bytes": 2860866.0,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "deepar",
+      "origin": 1801,
+      "scope": "fold",
+      "training_time_seconds": 57.259194124955684,
+      "prediction_time_seconds": 1.823743832996115,
+      "inference_seconds_per_sku_store": 0.007598932637483813,
+      "total_runtime_seconds": 59.0829379579518,
+      "n_sku_store_series": 240,
+      "trainable_parameters": 63582.0,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "deepar",
+      "origin": 1829,
+      "scope": "fold",
+      "training_time_seconds": 43.22870249999687,
+      "prediction_time_seconds": 1.775087625021115,
+      "inference_seconds_per_sku_store": 0.0073961984375879785,
+      "total_runtime_seconds": 45.003790125017986,
+      "n_sku_store_series": 240,
+      "trainable_parameters": 63582.0,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "deepar",
+      "origin": 1857,
+      "scope": "fold",
+      "training_time_seconds": 46.82275141694117,
+      "prediction_time_seconds": 1.8747378749540076,
+      "inference_seconds_per_sku_store": 0.007811407812308365,
+      "total_runtime_seconds": 48.69748929189518,
+      "n_sku_store_series": 240,
+      "trainable_parameters": 63582.0,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "deepar",
+      "origin": 1885,
+      "scope": "fold",
+      "training_time_seconds": 50.672686957987025,
+      "prediction_time_seconds": 1.8897941659670323,
+      "inference_seconds_per_sku_store": 0.007874142358195968,
+      "total_runtime_seconds": 52.56248112395406,
+      "n_sku_store_series": 240,
+      "trainable_parameters": 63582.0,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": null
+    },
+    {
+      "model": "deepar",
+      "origin": null,
+      "scope": "all_development_folds",
+      "training_time_seconds": 197.98333499988075,
+      "prediction_time_seconds": 7.36336349893827,
+      "inference_seconds_per_sku_store": 0.007670170311394031,
+      "total_runtime_seconds": 205.34669849881902,
+      "n_sku_store_series": 960,
+      "trainable_parameters": 63582.0,
+      "tree_count": null,
+      "serialized_model_bytes": null,
+      "resident_state_bytes": null
+    }
+  ],
+  "backtest_execution_seconds": 2237.8471074131085,
+  "pipeline_execution_seconds_before_metadata_write": 97.27347491704859,
+  "statistical_settings": {
+    "bootstrap_iterations": 2000,
+    "confidence": 0.95,
+    "dm_min_origins": 8,
+    "seed": 42
+  },
+  "final_holdout": {
+    "evaluated": false,
+    "used_for_tuning": false,
+    "origin": 1913,
+    "target_days": [
+      1914,
+      1941
+    ]
+  },
+  "dashboard_files": [
+    "dashboard/overall_model_metrics.parquet",
+    "dashboard/ranking_overall_accuracy.csv",
+    "dashboard/prediction_intervals.parquet",
+    "dashboard/runtime_comparisons.csv",
+    "dashboard/ranking_computational_efficiency.csv",
+    "dashboard/sku_store_metrics.parquet",
+    "dashboard/store_metrics.parquet",
+    "dashboard/demand_segment_metrics.parquet",
+    "dashboard/ranking_probabilistic_performance.csv",
+    "dashboard/horizon_metrics.parquet",
+    "dashboard/ranking_horizon_performance.csv",
+    "dashboard/forecast_predictions.csv",
+    "dashboard/forecast_origin_metrics.parquet",
+    "dashboard/store_metrics.csv",
+    "dashboard/demand_segment_metrics.csv",
+    "dashboard/forecast_origin_metrics.csv",
+    "dashboard/prediction_intervals.csv",
+    "dashboard/overall_model_metrics.csv",
+    "dashboard/horizon_metrics.csv",
+    "dashboard/forecast_predictions.parquet",
+    "dashboard/sku_store_metrics.csv",
+    "dashboard/ranking_demand_segment_performance.csv"
+  ],
+  "comparison_files": [
+    "statistics/paired_comparisons.csv",
+    "statistics/dm_tests.csv",
+    "statistics/bootstrap.csv"
+  ],
+  "ranking_files": [
+    "rankings/overall_accuracy.csv",
+    "rankings/horizon_performance.csv",
+    "rankings/demand_segment_performance.csv",
+    "rankings/probabilistic_performance.csv",
+    "rankings/computational_efficiency.csv"
+  ],
+  "visualizations": {
+    "output_dir": "/Users/sanchitgarg/Desktop/aml-project/reports/evaluation_runs/full-real-data-post-grid-fix-final/visualizations",
+    "figures": [
+      "accuracy_metrics.png",
+      "advanced_vs_seasonal_naive.png",
+      "horizon_accuracy.png",
+      "prediction_interval_coverage.png",
+      "prediction_interval_widths.png",
+      "probabilistic_forecasts_actual_median_intervals.png",
+      "runtime_comparison.png",
+      "sku_store_analysis.png",
+      "store_model_mae.png"
+    ],
+    "plotted_datasets": [
+      "advanced_models_failing_to_beat_baseline.csv",
+      "advanced_models_vs_seasonal_naive.csv",
+      "best_model_per_sku_store.csv",
+      "horizon_metrics.csv",
+      "model_size.csv",
+      "overall_metrics.csv",
+      "probabilistic_model_metrics.csv",
+      "representative_series_forecasts.csv",
+      "runtime_comparison.csv",
+      "sku_store_model_metrics.csv",
+      "store_metrics.csv",
+      "worst_sku_store_series.csv"
+    ],
+    "selected_detail_series_id": "FOODS_3_682__WI_3",
+    "probabilistic_models": [
+      "deepar",
+      "kalman_local_level_seasonal"
+    ]
+  },
+  "deep_ar_fit_strategy": "Fresh origin-specific model fit per fold; adapter requires exact fitted origin and has no safe incremental update API.",
+  "forecast_cache_reuse": {
+    "source_run_id": "20261114T100843Z-4be14fceca",
+    "model_fits_reused": true,
+    "reporting_regenerated": true,
+    "grid_validation": "exact match after canonicalizing series_id dtype"
+  }
+}
